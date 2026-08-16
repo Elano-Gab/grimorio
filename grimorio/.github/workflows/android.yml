@@ -12,39 +12,121 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Baixar o código
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      # ── Diagnóstico: mostra o que existe de verdade no repositório ──
+      - name: Ver o que tem no repositório
+        run: |
+          echo "===== ARQUIVOS NA RAIZ ====="
+          ls -la
+          echo ""
+          echo "===== ESTRUTURA COMPLETA ====="
+          find . -type f -not -path "./.git/*" | sort
+
+      # ── Se os arquivos vieram dentro de uma subpasta, sobe tudo pra raiz ──
+      - name: Corrigir subpasta, se houver
+        run: |
+          if [ ! -f www/index.html ] && [ -f grimorio/www/index.html ]; then
+            echo "Arquivos estavam em grimorio/. Movendo para a raiz."
+            shopt -s dotglob
+            mv grimorio/* .
+            rmdir grimorio || true
+          fi
+
+      - name: Conferir se o app existe
+        run: |
+          if [ ! -f www/index.html ]; then
+            echo "::error::Falta o arquivo www/index.html no repositório."
+            echo "Envie o app para a pasta www/ e rode de novo."
+            exit 1
+          fi
+          echo "OK: www/index.html encontrado ($(wc -c < www/index.html) bytes)"
+
+      # ── Cria as configurações caso não tenham sido enviadas ──
+      - name: Garantir package.json
+        run: |
+          if [ ! -f package.json ]; then
+            echo "package.json ausente. Criando."
+            cat > package.json << 'FIM'
+          {
+            "name": "grimorio",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@capacitor/android": "^8.0.0",
+              "@capacitor/core": "^8.0.0"
+            },
+            "devDependencies": {
+              "@capacitor/cli": "^8.0.0"
+            }
+          }
+          FIM
+          fi
+          cat package.json
+
+      - name: Garantir capacitor.config.json
+        run: |
+          if [ ! -f capacitor.config.json ]; then
+            echo "capacitor.config.json ausente. Criando."
+            cat > capacitor.config.json << 'FIM'
+          {
+            "appId": "br.com.grimorio.app",
+            "appName": "Grimorio",
+            "webDir": "www",
+            "server": { "androidScheme": "https" },
+            "android": { "backgroundColor": "#06090C" }
+          }
+          FIM
+          fi
+          cat capacitor.config.json
+
+      # ── Ambiente ──
+      - name: Preparar o Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - uses: actions/setup-java@v4
+      - name: Preparar o Java 21
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: android-actions/setup-android@v3
+      - name: Preparar o Android SDK
+        uses: android-actions/setup-android@v3
 
-      - run: npm install
+      # ── Build ──
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
 
-      - run: |
+      - name: Criar o projeto Android
+        run: |
           npx cap add android
           npx cap sync android
 
-      - run: |
+      - name: Gerar os ícones
+        run: npx @capacitor/assets generate --android || echo "Sem resources/icon.png — usando o ícone padrão."
+
+      - name: Compilar o APK
+        run: |
           chmod +x android/gradlew
           cd android
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - run: mv android/app/build/outputs/apk/debug/app-debug.apk grimorio-${{ github.run_number }}.apk
+      - name: Renomear o arquivo
+        run: mv android/app/build/outputs/apk/debug/app-debug.apk grimorio-${{ github.run_number }}.apk
 
-      - uses: actions/upload-artifact@v4
+      - name: Guardar como artefato
+        uses: actions/upload-artifact@v4
         with:
           name: grimorio-apk
           path: grimorio-${{ github.run_number }}.apk
 
-      - uses: softprops/action-gh-release@v2
+      - name: Publicar em Releases
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: Grimório — build ${{ github.run_number }}
+          name: Grimorio — build ${{ github.run_number }}
+          body: APK de teste, assinado com a chave de depuracao.
           files: grimorio-${{ github.run_number }}.apk
