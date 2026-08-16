@@ -1,0 +1,11 @@
+{
+  "appId": "br.com.grimorio.app",
+  "appName": "Grimório",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#06090C"
+  }
+}
