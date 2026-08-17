@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
-<title>Grimório — seu dinheiro, claro</title>
+<title>Grimório — assistente financeiro</title>
 <meta name="theme-color" content="#06090C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,1009 +17,1624 @@
 <style>
 :root{
   --void:#06090C; --panel:#0D141B; --panel2:#101922;
-  /* contraste corrigido: todos os tons de texto passam em AA sobre o fundo */
-  --ink:#E4EDF2;        /* texto principal      */
-  --ink-2:#B4C4CE;      /* texto secundário     */
-  --ink-3:#8A9CA7;      /* rótulos e apoio      */
+  --ink:#E4EDF2; --ink-2:#B4C4CE; --ink-3:#8A9CA7;
   --line:rgba(255,255,255,.09);
-
   --azul:#5FA3CC; --ambar:#DCA84B; --verde:#5FBB80;
   --brasa:#E0705A; --violeta:#A388E0; --ouro:#E4CE9A;
-
   --sans:'Barlow',system-ui,-apple-system,sans-serif;
   --disp:'Cinzel',Georgia,serif;
   --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
   --notch:14px;
-  --tap:48px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;height:100%}
 body{
-  margin:0;height:100vh;height:100dvh;overflow:hidden;
-  overscroll-behavior:none;touch-action:manipulation;
+  margin:0;height:100vh;height:100dvh;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;
   font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--ink);
-  background:
-    radial-gradient(900px 620px at 80% -10%,rgba(48,88,98,.20),transparent 60%),
-    radial-gradient(700px 560px at 0% 110%,rgba(70,46,92,.16),transparent 58%),
-    var(--void);
+  background:radial-gradient(900px 620px at 80% -10%,rgba(48,88,98,.20),transparent 60%),
+    radial-gradient(700px 560px at 0% 110%,rgba(70,46,92,.16),transparent 58%),var(--void);
   display:flex;justify-content:center;align-items:center;padding:20px 12px;
 }
 @media(max-width:640px){body{padding:0;align-items:stretch}}
+.phone{position:relative;width:100%;max-width:420px;height:100vh;height:min(920px,calc(100dvh - 40px));
+  display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,#080C11,#05080B);
+  border:1px solid #17222B;border-radius:26px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9)}
+@media(max-width:640px){.phone{border:0;border-radius:0;max-width:none;height:100vh;height:100dvh}}
 
-/* Casca do app: altura fixa igual à da tela.
-   Só o <main> rola — cabeçalho e menu ficam sempre visíveis. */
-.phone{
-  position:relative;width:100%;max-width:420px;
-  height:100vh;height:min(920px,calc(100dvh - 40px));
-  display:flex;flex-direction:column;overflow:hidden;
-  background:linear-gradient(180deg,#080C11,#05080B);
-  border:1px solid #17222B;border-radius:26px;
-  box-shadow:0 40px 90px -30px rgba(0,0,0,.9);
-}
-@media(max-width:640px){
-  .phone{border:0;border-radius:0;max-width:none;height:100vh;height:100dvh}
-}
-
-/* ─────────── cabeçalho ─────────── */
-header{
-  flex:none;z-index:4;position:relative;user-select:none;
-  padding:calc(12px + env(safe-area-inset-top)) 16px 11px;
-  display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid transparent;
-  background:linear-gradient(180deg,rgba(12,18,24,.92),rgba(8,12,17,.55));
-  transition:border-color .2s,box-shadow .2s;
-}
-header[data-scrolled="1"]{
-  border-bottom-color:var(--line);
-  background:rgba(9,14,19,.98);
-  box-shadow:0 8px 24px -12px rgba(0,0,0,.9);
-}
+header{flex:none;z-index:4;position:relative;user-select:none;
+  padding:calc(12px + env(safe-area-inset-top)) 14px 11px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid transparent;background:linear-gradient(180deg,rgba(12,18,24,.92),rgba(8,12,17,.55));
+  transition:border-color .2s,box-shadow .2s}
+header[data-scrolled="1"]{border-bottom-color:var(--line);background:rgba(9,14,19,.98);box-shadow:0 8px 24px -12px rgba(0,0,0,.9)}
 header .who{flex:1;min-width:0}
-header .who .hi{font-size:12.5px;color:var(--ink-3);letter-spacing:.01em;line-height:1.2}
-header .who .tt{font-family:var(--disp);font-size:16px;letter-spacing:.1em;color:var(--ink);margin-top:2px;line-height:1.2}
-.icobtn{
-  width:44px;height:44px;flex:none;display:grid;place-items:center;
-  background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:13px;
-  color:var(--ink-2);font-size:18px;cursor:pointer;transition:transform .12s,background .12s;
-}
+header .who .hi{font-size:12.5px;color:var(--ink-3);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+header .who .tt{font-family:var(--disp);font-size:16px;letter-spacing:.1em;margin-top:2px;line-height:1.2}
+.avatar{width:44px;height:44px;flex:none;border-radius:14px;border:1px solid var(--line);cursor:pointer;
+  display:grid;place-items:center;font-size:19px;background:rgba(255,255,255,.05);transition:transform .12s}
+.avatar:active{transform:scale(.92)}
+.icobtn{width:44px;height:44px;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.05);
+  border:1px solid var(--line);border-radius:13px;color:var(--ink-2);font-size:18px;cursor:pointer;transition:transform .12s}
 .icobtn:active{transform:scale(.92)}
-.icobtn:active{background:rgba(255,255,255,.11)}
-.icobtn:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
+.icobtn:focus-visible,.avatar:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
 
-/* ─────────── conteúdo ─────────── */
-main{
-  flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
-  overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;
-  padding:2px 16px 30px;scrollbar-width:none;
-}
+main{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;padding:2px 16px 100px;scrollbar-width:none}
 main::-webkit-scrollbar{display:none}
+main[data-chat="1"]{padding-bottom:16px}
 main[data-anim="1"]{animation:entra .24s cubic-bezier(.22,.9,.32,1)}
 @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){main[data-anim="1"]{animation:none}}
 
 .sec{margin-top:22px}
 .sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.sec-h h2{
-  margin:0;font-family:var(--disp);font-size:13px;font-weight:600;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);
-}
+.sec-h h2{margin:0;font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
 .sec-h .cnt{font-size:13px;color:var(--ink-3)}
+.sec-h button{background:none;border:0;color:var(--ouro);font-family:var(--sans);font-size:14px;cursor:pointer;padding:8px 0;min-height:40px}
 
-.card{
-  --acc:var(--azul);position:relative;padding:1px;margin-bottom:12px;
+.card{--acc:var(--azul);position:relative;padding:1px;margin-bottom:12px;
   background:linear-gradient(155deg,color-mix(in srgb,var(--acc) 42%,transparent),rgba(120,150,165,.10) 60%);
-  clip-path:polygon(0 0,calc(100% - var(--notch)) 0,100% var(--notch),100% 100%,var(--notch) 100%,0 calc(100% - var(--notch)));
-}
-.card>.in{
-  clip-path:inherit;padding:15px;
-  background:
-    radial-gradient(130% 90% at 0% 0%,color-mix(in srgb,var(--acc) 10%,transparent),transparent 60%),
-    linear-gradient(180deg,var(--panel2),var(--panel));
-}
+  clip-path:polygon(0 0,calc(100% - var(--notch)) 0,100% var(--notch),100% 100%,var(--notch) 100%,0 calc(100% - var(--notch)))}
+.card>.in{clip-path:inherit;padding:15px;
+  background:radial-gradient(130% 90% at 0% 0%,color-mix(in srgb,var(--acc) 10%,transparent),transparent 60%),
+             linear-gradient(180deg,var(--panel2),var(--panel))}
 .card.tap{cursor:pointer}
 .card.tap:active>.in{background:linear-gradient(180deg,#16212B,#111a22)}
-.card:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-
 .chead{display:flex;align-items:center;gap:11px;margin-bottom:12px}
-.chead .sg{
-  width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:10px;font-size:16px;
-  color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);
-  border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);
-}
-.chead .nm{flex:1;font-size:15px;font-weight:500;letter-spacing:.02em;color:var(--ink)}
+.chead .sg{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:10px;font-size:16px;
+  color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent)}
+.chead .nm{flex:1;font-size:15px;font-weight:500}
 .chead .ex{font-size:22px;color:var(--ink-3);line-height:1}
 
-/* ─────────── números ─────────── */
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .hero{text-align:center;padding:18px 0 4px}
-.hero .lbl{font-size:13.5px;color:var(--ink-3);letter-spacing:.04em}
+.hero .lbl{font-size:13.5px;color:var(--ink-3)}
 .hero .big{font-family:var(--mono);font-size:clamp(28px,9vw,36px);line-height:1.1;margin-top:6px;color:#F1F7FA;text-shadow:0 0 30px rgba(140,195,215,.2)}
-.hero .sub{font-size:14.5px;color:var(--ink-2);margin-top:9px;max-width:300px;margin-left:auto;margin-right:auto}
-.hero .sub b{color:var(--brasa);font-weight:500}
+.hero .sub{font-size:14.5px;color:var(--ink-2);margin-top:9px;max-width:300px;margin-inline:auto}
+.val-md{font-family:var(--mono);font-size:17px}
 
-.val-lg{font-family:var(--mono);font-size:23px;color:var(--ink)}
-.val-md{font-family:var(--mono);font-size:17px;color:var(--ink)}
-
-/* ─────────── linhas de lista ─────────── */
-.row{
-  display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
+.row{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .row:last-child{border-bottom:0}
-.row .ic{
-  width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;font-size:15px;
-  color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);
-  border:1px solid color-mix(in srgb,var(--acc) 26%,transparent);
-}
+.row .ic{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;font-size:15px;
+  color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid color-mix(in srgb,var(--acc) 26%,transparent)}
 .row .tx{flex:1;min-width:0}
-.row .tx b{display:block;font-size:15.5px;font-weight:400;color:var(--ink);letter-spacing:.01em}
+.row .tx b{display:block;font-size:15.5px;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .tx span{display:block;font-size:13px;color:var(--ink-3);margin-top:2px}
 .row .rt{text-align:right;flex:none}
-.row .rt b{display:block;font-family:var(--mono);font-size:16px;font-weight:400;color:var(--ink)}
+.row .rt b{display:block;font-family:var(--mono);font-size:16px;font-weight:400}
+.row.click{cursor:pointer}
+.row.click:active{background:rgba(255,255,255,.04)}
 
-.pill{
-  display:inline-block;margin-top:4px;padding:3px 9px;border-radius:20px;
-  font-size:12px;font-weight:500;letter-spacing:.02em;white-space:nowrap;
-}
+.pill{display:inline-block;margin-top:4px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
 .pill.ok{color:#8FD9AC;background:rgba(95,187,128,.15)}
 .pill.no{color:#F0A08C;background:rgba(224,112,90,.16)}
 .pill.nt{color:var(--ink-2);background:rgba(255,255,255,.07)}
+.pill.cr{color:#EBD5A6;background:rgba(228,206,154,.14)}
+.pill.bf{color:#C4AEE8;background:rgba(163,136,224,.16)}
 
-/* ─────────── barras ─────────── */
 .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:9px}
-.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 55%,transparent),var(--acc))}
+.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 55%,transparent),var(--acc));transition:width .4s}
+.bar.grande{height:11px}
+.bar i.over{background:linear-gradient(90deg,#C25A45,#E0705A)}
 
-/* ─────────── anel ─────────── */
-.ringbox{display:flex;flex-direction:column;align-items:center;gap:18px}
-.ring{position:relative;width:min(186px,54vw);height:min(186px,54vw)}
-.ring svg{width:100%;height:100%}
-.ring svg{transform:rotate(-90deg);display:block}
-.ring .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring .core b{font-family:var(--mono);font-size:30px;font-weight:500;color:#F1F7FA;line-height:1}
-.ring .core span{font-size:13px;color:var(--ink-3);margin-top:6px}
-.legend{width:100%;display:flex;flex-direction:column;gap:2px}
-.lg{display:flex;align-items:center;gap:11px;min-height:44px;padding:6px 2px;border-bottom:1px solid rgba(255,255,255,.05)}
-.lg:last-child{border-bottom:0}
-.lg i{width:12px;height:12px;border-radius:4px;flex:none}
-.lg .n{flex:1;font-size:15px;color:var(--ink-2)}
-.lg .v{font-family:var(--mono);font-size:15px;color:var(--ink)}
-.lg .p{font-size:13px;color:var(--ink-3);width:48px;text-align:right}
-
-/* ─────────── ação prioritária ─────────── */
-.first{
-  --acc:var(--ouro);margin-top:16px;padding:1px;
-  background:linear-gradient(150deg,rgba(228,206,154,.55),rgba(228,206,154,.12) 70%);
-  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
-}
-.first>.in{clip-path:inherit;padding:18px;background:linear-gradient(150deg,rgba(228,206,154,.09),rgba(13,20,27,.96) 60%)}
-.first .kicker{display:flex;align-items:center;gap:9px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ouro)}
-.first .kicker .dot{width:9px;height:9px;border-radius:50%;background:var(--ouro);box-shadow:0 0 0 0 rgba(228,206,154,.5);animation:pulse 2.8s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 12px rgba(228,206,154,0)}100%{box-shadow:0 0 0 0 rgba(228,206,154,0)}}
-@media(prefers-reduced-motion:reduce){.first .kicker .dot{animation:none}}
-.first h3{margin:12px 0 8px;font-size:19px;font-weight:500;line-height:1.35;color:var(--ink)}
-.first p{margin:0;font-size:15px;color:var(--ink-2);line-height:1.55}
-
-/* ─────────── botões ─────────── */
-.btn{
-  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
-  min-height:52px;padding:13px 16px;margin-top:16px;cursor:pointer;
-  font-family:var(--sans);font-size:16px;font-weight:500;letter-spacing:.02em;border-radius:12px;
-  color:#0A0F14;background:var(--acc);border:0;
-}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:13px 16px;margin-top:14px;cursor:pointer;
+  font-family:var(--sans);font-size:16px;font-weight:500;border-radius:12px;color:#0A0F14;background:var(--acc);border:0}
 .btn:active{filter:brightness(.9)}
-.btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.btn.sec:active{background:rgba(255,255,255,.07)}
 .btn.dgr{background:transparent;color:#F0A08C;border:1px solid rgba(224,112,90,.4)}
 .btn.sm{min-height:44px;font-size:14.5px;margin-top:10px}
-
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{
-  min-height:44px;padding:10px 15px;border-radius:22px;cursor:pointer;
-  font-size:14.5px;color:var(--ink-2);background:rgba(255,255,255,.05);
-  border:1px solid var(--line);font-family:var(--sans);
-}
-.chip[aria-pressed="true"]{background:color-mix(in srgb,var(--acc) 20%,transparent);border-color:var(--acc);color:var(--ink)}
-.chip:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.chip{min-height:44px;padding:10px 15px;border-radius:22px;cursor:pointer;font-size:14.5px;color:var(--ink-2);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-family:var(--sans);text-align:left}
+.chip[aria-pressed="true"]{background:color-mix(in srgb,var(--acc) 22%,transparent);border-color:var(--acc);color:var(--ink)}
+.chip.mini{min-height:38px;padding:7px 13px;font-size:13.5px}
+.segs{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.05);border-radius:14px;margin:14px 0 4px}
+.segs button{flex:1;min-height:42px;border:0;border-radius:11px;background:none;color:var(--ink-3);font-family:var(--sans);font-size:14.5px;cursor:pointer}
+.segs button[aria-pressed="true"]{background:color-mix(in srgb,var(--acc) 26%,transparent);color:var(--ink)}
 
-/* ─────────── formulário ─────────── */
 .field{margin-top:18px}
 .field>label{display:block;font-size:14px;color:var(--ink-2);margin-bottom:8px;font-weight:500}
 .field .hint{font-size:13px;color:var(--ink-3);margin-top:7px;line-height:1.45}
-.inp{
-  display:flex;align-items:center;gap:8px;min-height:54px;padding:0 14px;border-radius:12px;
-  background:rgba(255,255,255,.05);border:1px solid var(--line);
-}
+.inp{display:flex;align-items:center;gap:8px;min-height:54px;padding:0 14px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
 .inp:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
 .inp .pre{font-family:var(--mono);font-size:16px;color:var(--ink-3)}
-.inp input,.inp select{
-  flex:1;width:100%;min-width:0;background:none;border:0;outline:none;color:var(--ink);
-  font-family:var(--sans);font-size:17px;padding:14px 0;
-}
+.inp input,.inp select{flex:1;width:100%;min-width:0;background:none;border:0;outline:none;color:var(--ink);font-family:var(--sans);font-size:17px;padding:14px 0}
 .inp input.mono{font-family:var(--mono)}
 .inp select{font-size:16px;-webkit-appearance:none;appearance:none}
 .inp select option{background:#101922;color:var(--ink)}
-.preview{
-  margin-top:16px;padding:14px 16px;border-radius:12px;
-  background:rgba(163,136,224,.12);border:1px solid rgba(163,136,224,.28);
-}
+.inp.grande{min-height:70px}
+.inp.grande input{font-family:var(--mono);font-size:30px;padding:16px 0}
+.preview{margin-top:16px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent)}
 .preview .l{font-size:13.5px;color:var(--ink-2)}
-.preview .v{font-family:var(--mono);font-size:24px;color:var(--ink);margin-top:5px}
+.preview .v{font-family:var(--mono);font-size:24px;margin-top:5px}
 .preview .n{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.45}
 
-/* ─────────── leituras do oráculo ─────────── */
-.ins{--acc:var(--ouro)}
-.ins .top{display:flex;align-items:flex-start;gap:12px}
-.ins .sev{width:12px;height:12px;border-radius:50%;flex:none;margin-top:6px}
-.sv-urgente{background:var(--brasa);box-shadow:0 0 10px rgba(224,112,90,.6)}
-.sv-atencao{background:var(--ambar)}
-.sv-contexto{background:var(--azul)}
-.sv-saudavel{background:var(--verde)}
-.ins h3{margin:0;font-size:17px;font-weight:500;color:var(--ink);line-height:1.35}
-.ins .plain{margin:9px 0 0;font-size:15px;line-height:1.55;color:var(--ink-2)}
-.ins .more{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
-  min-height:46px;margin-top:12px;padding:0;background:none;border:0;cursor:pointer;
-  font-family:var(--sans);font-size:14.5px;color:var(--ouro);border-top:1px solid var(--line);
-}
-.detail{display:none;padding-top:4px}
-.detail[data-open="1"]{display:block}
-.math{
-  margin-top:12px;padding:14px;border-radius:10px;overflow-x:auto;
-  font-family:var(--mono);font-size:13px;line-height:1.85;color:var(--ink-2);
-  background:rgba(255,255,255,.045);border-left:3px solid rgba(228,206,154,.4);white-space:pre;
-}
-.opts{margin-top:14px}
-.opts .t{font-size:13.5px;color:var(--ink-3);margin-bottom:8px}
-.opts li{font-size:14.5px;color:var(--ink-2);line-height:1.5;margin-bottom:8px;list-style:none;padding-left:18px;position:relative}
-.opts li::before{content:'◇';position:absolute;left:0;color:var(--ouro);font-size:11px;top:3px}
-.concept{margin-top:14px;font-size:12.5px;color:var(--ink-3);letter-spacing:.04em}
+/* ─── conversa ─── */
+.msg{display:flex;margin-top:14px;max-width:100%}
+.msg.eu{justify-content:flex-end}
+.bolha{max-width:86%;padding:13px 15px;border-radius:18px;font-size:15px;line-height:1.55;word-wrap:break-word}
+.msg.eu .bolha{background:linear-gradient(150deg,#2A3D4C,#1D2C38);border:1px solid rgba(95,163,204,.3);border-bottom-right-radius:6px}
+.msg.or .bolha{background:linear-gradient(150deg,rgba(228,206,154,.10),rgba(16,25,34,.95));border:1px solid rgba(228,206,154,.26);border-bottom-left-radius:6px;color:var(--ink-2)}
+.msg.or .bolha b{color:var(--ink);font-weight:600}
+.msg.or .bolha .destaque{color:var(--ouro);font-weight:600}
+.gr{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.gl{display:flex;align-items:center;gap:9px;font-size:13.5px}
+.gl .n{width:88px;flex:none;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl .b{flex:1;height:9px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden}
+.gl .b i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,rgba(228,206,154,.5),var(--ouro))}
+.gl .v{width:74px;flex:none;text-align:right;font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+.conta{margin-top:12px;padding:11px 13px;border-radius:10px;font-family:var(--mono);font-size:12.5px;line-height:1.75;
+  color:var(--ink-2);background:rgba(255,255,255,.045);border-left:3px solid rgba(228,206,154,.4);white-space:pre;overflow-x:auto}
+.pensando{display:inline-flex;gap:5px;padding:4px 0}
+.pensando i{width:7px;height:7px;border-radius:50%;background:var(--ouro);opacity:.4;animation:pisca 1.3s infinite}
+.pensando i:nth-child(2){animation-delay:.18s}.pensando i:nth-child(3){animation-delay:.36s}
+@keyframes pisca{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){.pensando i{animation:none}}
 
-/* ─────────── navegação ─────────── */
-nav{
-  flex:none;z-index:6;display:flex;user-select:none;
-  padding:7px 4px calc(7px + env(safe-area-inset-bottom));
-  background:rgba(8,12,17,.99);border-top:1px solid var(--line);
-  box-shadow:0 -8px 24px -14px rgba(0,0,0,.9);
-}
-nav button{
-  flex:1;min-height:52px;padding:8px 2px 6px;background:none;border:0;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--ink-3);
-  font-family:var(--sans);position:relative;border-radius:12px;transition:color .15s;
-}
+#composer{flex:none;display:none;padding:10px 12px;border-top:1px solid var(--line);background:rgba(9,14,19,.98);z-index:5}
+#composer[data-on="1"]{display:block}
+.compin{display:flex;align-items:flex-end;gap:8px}
+.compin .caixa{flex:1;display:flex;align-items:center;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:22px;padding:0 6px 0 15px;min-height:48px}
+.compin .caixa:focus-within{border-color:var(--ouro)}
+.compin input{flex:1;background:none;border:0;outline:none;color:var(--ink);font-family:var(--sans);font-size:16px;padding:13px 0}
+.cbtn{width:44px;height:44px;flex:none;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;font-size:18px}
+.cbtn.env{background:var(--ouro);color:#0A0F14}
+.cbtn.mic{background:rgba(255,255,255,.07);color:var(--ink-2);border:1px solid var(--line)}
+.cbtn.mic[data-ouvindo="1"]{background:var(--brasa);color:#fff;animation:pulsa 1.2s infinite}
+@keyframes pulsa{50%{box-shadow:0 0 0 10px rgba(224,112,90,0)}0%,100%{box-shadow:0 0 0 0 rgba(224,112,90,.45)}}
+.sugs{display:flex;gap:7px;overflow-x:auto;padding:0 0 9px;scrollbar-width:none}
+.sugs::-webkit-scrollbar{display:none}
+.sugs button{flex:none;padding:8px 14px;border-radius:18px;font-size:13.5px;cursor:pointer;
+  background:rgba(228,206,154,.09);border:1px solid rgba(228,206,154,.28);color:var(--ouro);font-family:var(--sans);white-space:nowrap;min-height:38px}
+
+nav{flex:none;z-index:6;display:flex;user-select:none;padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+  background:rgba(8,12,17,.99);border-top:1px solid var(--line);box-shadow:0 -8px 24px -14px rgba(0,0,0,.9)}
+nav button{flex:1;min-height:52px;padding:8px 2px 6px;background:none;border:0;cursor:pointer;display:flex;
+  flex-direction:column;align-items:center;gap:5px;color:var(--ink-3);font-family:var(--sans);position:relative;border-radius:12px}
 nav button:active{background:rgba(255,255,255,.05)}
-nav button .g{font-size:19px;line-height:1;transition:transform .18s}
-nav button .t{font-size:11px;letter-spacing:.02em;line-height:1}
+nav button .g{font-size:19px;line-height:1}
+nav button .t{font-size:11px;line-height:1}
 nav button[aria-current="page"]{color:var(--ouro)}
-nav button[aria-current="page"] .g{transform:translateY(-1px)}
-nav button[aria-current="page"]::before{
-  content:'';position:absolute;top:0;left:28%;right:28%;height:2.5px;border-radius:0 0 3px 3px;
-  background:var(--ouro);box-shadow:0 0 10px rgba(228,206,154,.6);
-}
-nav button:focus-visible{outline:2px solid var(--ouro);outline-offset:-3px}
+nav button[aria-current="page"]::before{content:'';position:absolute;top:0;left:28%;right:28%;height:2.5px;border-radius:0 0 3px 3px;background:var(--ouro);box-shadow:0 0 10px rgba(228,206,154,.6)}
+.fab{position:absolute;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:7;width:60px;height:60px;
+  border-radius:50%;border:1px solid rgba(228,206,154,.5);cursor:pointer;background:linear-gradient(150deg,#E4CE9A,#C9A85F);
+  color:#0A0F14;font-size:30px;line-height:1;display:grid;place-items:center;
+  box-shadow:0 10px 30px -6px rgba(0,0,0,.8),0 0 26px rgba(228,206,154,.22);transition:transform .14s}
+.fab:active{transform:scale(.9)}
+.fab[hidden]{display:none}
 
-/* ─────────── folha inferior ─────────── */
 .backdrop{position:absolute;inset:0;z-index:10;background:rgba(3,6,9,.75);display:none}
 .backdrop[data-open="1"]{display:block}
-.sheet{
-  position:absolute;left:0;right:0;bottom:0;z-index:11;max-height:90%;display:none;flex-direction:column;
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:11;max-height:92%;display:none;flex-direction:column;
   background:linear-gradient(180deg,#111A23,#0A1015);border-top:1px solid rgba(228,206,154,.28);
-  border-radius:20px 20px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,.6);
-  animation:up .26s cubic-bezier(.2,.9,.3,1);
-}
+  border-radius:20px 20px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,.6);animation:up .26s cubic-bezier(.2,.9,.3,1)}
 .sheet[data-open="1"]{display:flex}
 @keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.sheet{animation:none}}
 .sheet .grab{width:42px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);margin:10px auto 4px;flex:none}
 .sheet .sh{display:flex;align-items:center;gap:10px;padding:8px 18px 14px;border-bottom:1px solid var(--line);flex:none}
-.sheet .sh h2{flex:1;margin:0;font-family:var(--disp);font-size:15px;letter-spacing:.12em;color:var(--ink)}
+.sheet .sh h2{flex:1;margin:0;font-family:var(--disp);font-size:15px;letter-spacing:.12em}
 .sheet .sb{overflow-y:auto;overscroll-behavior:contain;padding:16px 18px calc(28px + env(safe-area-inset-bottom))}
 .sheet .sb::-webkit-scrollbar{display:none}
 
-/* ─────────── boas-vindas ─────────── */
 .tour{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;background:linear-gradient(180deg,#0A1017,#060A0E)}
 .tour[data-open="1"]{display:flex}
-.tour .body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 28px;text-align:center}
-.tour .mark{font-size:52px;line-height:1;color:var(--ouro);margin-bottom:22px;text-shadow:0 0 30px rgba(228,206,154,.35)}
-.tour h2{font-family:var(--disp);font-size:24px;font-weight:600;letter-spacing:.06em;margin:0 0 14px;color:var(--ink)}
-.tour p{font-size:16.5px;line-height:1.6;color:var(--ink-2);margin:0 auto;max-width:310px}
-.tour .list{margin:22px auto 0;max-width:320px;text-align:left;width:100%}
-.tour .list div{display:flex;gap:13px;align-items:flex-start;margin-bottom:14px;font-size:15.5px;color:var(--ink-2);line-height:1.45}
+.tour .body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px;text-align:center;overflow-y:auto}
+.tour .mark{font-size:50px;line-height:1;color:var(--ouro);margin-bottom:18px;text-shadow:0 0 30px rgba(228,206,154,.35)}
+.tour h2{font-family:var(--disp);font-size:22px;font-weight:600;letter-spacing:.06em;margin:0 0 13px}
+.tour p{font-size:16px;line-height:1.6;color:var(--ink-2);margin:0 auto;max-width:310px}
+.tour .list{margin:20px auto 0;max-width:320px;text-align:left;width:100%}
+.tour .list div{display:flex;gap:13px;align-items:flex-start;margin-bottom:13px;font-size:15px;color:var(--ink-2);line-height:1.45}
 .tour .list b{color:var(--ink);font-weight:500}
 .tour .list i{font-style:normal;font-size:19px;width:26px;flex:none;text-align:center}
-.tour .foot{padding:20px 24px calc(28px + env(safe-area-inset-bottom));flex:none}
-.dots{display:flex;justify-content:center;gap:8px;margin-bottom:18px}
+.tour .foot{padding:14px 24px calc(22px + env(safe-area-inset-bottom));flex:none}
+.dots{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
 .dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}
 .dots i.on{background:var(--ouro);width:22px;border-radius:4px}
 
-/* ─────────── aviso ─────────── */
-.toast{
-  position:absolute;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:30;padding:14px 16px;border-radius:12px;
-  background:#18242E;border:1px solid rgba(228,206,154,.35);color:var(--ink);font-size:15px;
-  box-shadow:0 12px 30px rgba(0,0,0,.5);display:none;align-items:center;gap:11px;
-}
+.toast{position:absolute;left:16px;right:16px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:30;padding:14px 16px;border-radius:12px;
+  background:#18242E;border:1px solid rgba(228,206,154,.35);font-size:15px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:none;align-items:center;gap:11px}
 .toast[data-open="1"]{display:flex}
-
-.empty{padding:40px 20px;text-align:center}
+.toast button{margin-left:auto;background:none;border:0;color:var(--ouro);font-family:var(--sans);font-size:14.5px;cursor:pointer;padding:6px 4px}
+.empty{padding:36px 20px;text-align:center}
 .empty .e{font-size:38px;color:var(--ink-3);opacity:.5}
-.empty p{font-size:15.5px;color:var(--ink-2);margin:14px auto 0;max-width:260px;line-height:1.55}
+.empty p{font-size:15.5px;color:var(--ink-2);margin:14px auto 0;max-width:270px;line-height:1.55}
 .note{font-size:13.5px;line-height:1.6;color:var(--ink-3);margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
-.gl{margin-bottom:20px}
-.gl b{display:block;font-size:16px;color:var(--ink);font-weight:500;margin-bottom:5px}
-.gl p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.55}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.gl2{margin-bottom:20px}
+.gl2 b{display:block;font-size:16px;margin-bottom:5px;font-weight:500}
+.gl2 p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+.dia{font-size:12.5px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;margin:18px 0 2px}
 </style>
 </head>
 <body>
-<div class="phone">
-
+<div class="phone" id="app">
   <header>
-    <div class="who">
-      <div class="hi" id="hHi">Bom dia</div>
-      <div class="tt" id="hTt">Início</div>
-    </div>
-    <button class="icobtn" id="btEye" aria-label="Mostrar ou ocultar valores">👁</button>
-    <button class="icobtn" id="btHelp" aria-label="Ajuda e glossário">?</button>
+    <button class="avatar" data-act="perfis" id="btAv" aria-label="Trocar de perfil">◬</button>
+    <div class="who"><div class="hi" id="hHi"></div><div class="tt" id="hTt">Início</div></div>
+    <button class="icobtn" data-act="olho" id="btEye" aria-label="Ocultar valores">👁</button>
+    <button class="icobtn" data-act="ajuda" aria-label="Ajuda">?</button>
   </header>
-
   <main id="view"></main>
+  <button class="fab" data-act="novoLanc" id="fab" aria-label="Registrar lançamento">+</button>
+  <div id="composer">
+    <div class="sugs" id="sugs"></div>
+    <div class="compin">
+      <div class="caixa"><input id="entrada" placeholder="Pergunte ou registre um gasto..." autocomplete="off" enterkeyhint="send"></div>
+      <button class="cbtn mic" data-act="microfone" id="btMic" aria-label="Falar">🎙</button>
+      <button class="cbtn env" data-act="enviar" aria-label="Enviar">↑</button>
+    </div>
+  </div>
   <nav id="nav"></nav>
-
-  <div class="backdrop" id="bd"></div>
+  <div class="backdrop" data-act="fechar" id="bd"></div>
   <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
     <div class="grab"></div>
-    <div class="sh"><h2 id="shTitle"></h2><button class="icobtn" id="btClose" aria-label="Fechar">✕</button></div>
+    <div class="sh"><h2 id="shTitle"></h2><button class="icobtn" data-act="fechar" aria-label="Fechar">✕</button></div>
     <div class="sb" id="shBody"></div>
   </section>
-
   <div class="tour" id="tour"></div>
   <div class="toast" id="toast" role="status"></div>
 </div>
 
 <script>
 'use strict';
-/* ═══════════════════════════════════════════════════════════════
-   GRIMÓRIO v2 — protótipo com foco em usabilidade
-   Dados fictícios. Em produção vêm do agregador + entrada manual.
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   GRIMÓRIO — assistente financeiro
+   Registro manual · vários perfis · Oráculo conversacional
+   Tudo roda no aparelho. Nenhum dado sai daqui.
+   ═══════════════════════════════════════════════════════════ */
 
-const MERCADO={selic:.14,cdi:.139,ipca:.0444,poupanca:.0837,ref:'16/08/2026'};
+const guardar=(k,v)=>{try{localStorage.setItem('gr.'+k,JSON.stringify(v))}catch(e){}};
+const buscar=(k,p)=>{try{const v=localStorage.getItem('gr.'+k);return v?JSON.parse(v):p}catch(e){return p}};
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
 
-const CONTAS=[
-  {n:'Nubank',        sub:'Conta de pagamento', ic:'ᚾ',v:3842.17,rende:false},
-  {n:'Itaú',          sub:'Conta corrente',     ic:'ᛁ',v:1190.00,rende:false},
-  {n:'Inter',         sub:'Conta digital',      ic:'ᛖ',v: 640.55,rende:false},
-  {n:'Mercado Pago',  sub:'Conta de pagamento', ic:'ᛗ',v: 210.00,rende:true,taxa:'100% do CDI'},
-];
-const CAIXINHAS=[
-  {n:'Reserva de emergência',v:12400,taxa:100,meta:'Reserva de emergência'},
-  {n:'Japão 2027',           v: 5000,taxa:120,meta:'Viagem — Japão',teto:5000},
-  {n:'Aluguel de dezembro',  v: 2100,taxa:100},
-  {n:'Presentes',            v:  480,taxa:100},
-];
-const ACERVO=[
-  {c:'Renda fixa pós-fixada',      sg:'ᛚ',cor:'#5FBB80',risco:'baixo',itens:[
-    {n:'Tesouro Selic 2029',        v:8300,idx:'Selic + 0,04%',liq:'Resgate em 1 dia',em:'Tesouro Nacional'},
-    {n:'CDB liquidez diária',       v:4150,idx:'102% do CDI',  liq:'Resgate no mesmo dia',em:'Banco Inter'}]},
-  {c:'Renda fixa prefixada',       sg:'ᛈ',cor:'#7CC79A',risco:'baixo',itens:[
-    {n:'CDB prefixado 2027',        v:3000,idx:'12,80% ao ano',liq:'Só no vencimento',em:'Banco Master'}]},
-  {c:'Protegido da inflação',      sg:'ᛇ',cor:'#96C77C',risco:'médio',itens:[
-    {n:'Tesouro IPCA+ 2035',        v:6700,idx:'IPCA + 7,12%', liq:'Oscila se resgatar antes',em:'Tesouro Nacional'}]},
-  {c:'Renda fixa isenta de IR',    sg:'ᛊ',cor:'#B6C77C',risco:'baixo',itens:[
-    {n:'LCI Sofisa',                v:5000,idx:'95% do CDI',   liq:'Carência de 9 meses',em:'Banco Sofisa'}]},
-  {c:'Ações do Brasil',            sg:'ᚦ',cor:'#DCA84B',risco:'alto',itens:[
-    {n:'PETR4 · ITSA4 · WEGE3',     v:7450,idx:'Bolsa (B3)',   liq:'Resgate em 2 dias',em:'B3'},
-    {n:'ETF BOVA11',                v:2100,idx:'Índice Ibovespa',liq:'Resgate em 2 dias',em:'BlackRock'}]},
-  {c:'Fundos imobiliários',        sg:'ᛒ',cor:'#D19A5C',risco:'alto',itens:[
-    {n:'MXRF11 · HGLG11',           v:4900,idx:'Dividendos isentos',liq:'Resgate em 2 dias',em:'B3'}]},
-  {c:'Investimento internacional', sg:'ᛟ',cor:'#5FA3CC',risco:'alto',itens:[
-    {n:'ETF IVVB11 (S&P 500)',      v:3600,idx:'S&P 500 em reais',liq:'Resgate em 2 dias',em:'BlackRock'}]},
-  {c:'Criptoativos',               sg:'ᚲ',cor:'#A388E0',risco:'muito alto',itens:[
-    {n:'Bitcoin',                   v:2250,idx:'Sem indexador',liq:'Imediata',em:'Autocustódia'}]},
-  {c:'Previdência privada',        sg:'ᛗ',cor:'#9080D0',risco:'baixo',itens:[
-    {n:'PGBL Icatu',                v:5800,idx:'CDI + 0,3%',   liq:'Pensado para o longo prazo',em:'Icatu'}]},
-  {c:'Fundos multimercado',        sg:'ᚹ',cor:'#D07090',risco:'médio',itens:[
-    {n:'Kinea Atlas II',            v:1900,idx:'CDI + ganho extra',liq:'Resgate em 31 dias',em:'Kinea'}]},
-];
-const DIVIDAS=[
-  {n:'Parcelamento da fatura',sub:'Nubank',v:1850,taxa:.112},
-  {n:'Empréstimo consignado', sub:'Inter', v:4200,taxa:.017},
-];
-const RENDA=7800;
-const GASTOS=[
-  {c:'Moradia',1:1450,m:1450,e:true},{c:'Mercado',1:980,m:870,e:true},
-  {c:'Transporte',1:420,m:390,e:true},{c:'Saúde e farmácia',1:260,m:275,e:true},
-  {c:'Educação',1:190,m:190,e:true},{c:'Água, luz e internet',1:650,m:640,e:true},
-  {c:'Restaurantes e delivery',1:890,m:540,e:false},
-  {c:'Assinaturas',1:312,m:214,e:false,rec:true},
-  {c:'Lazer',1:380,m:350,e:false},{c:'Roupas',1:210,m:160,e:false},{c:'Presentes',1:120,m:110,e:false},
-].map(g=>({cat:g.c,v:g[1],m3:g.m,ess:g.e,rec:g.rec}));
+/* ═════════ PERFIS ═════════ */
+let PERFIS=buscar('perfis',null);
+let perfilAtivo=buscar('perfilAtivo',null);
+const EMOJIS=['◬','◇','✦','❖','⬡','✧','◈','⬢'];
+const CORES=['--ouro','--azul','--verde','--violeta','--ambar','--brasa'];
 
-let METAS=[
-  {n:'Reserva de emergência',alvo:23700,atual:24850,prazo:null,onde:'Caixinha 100% do CDI',taxa:.139},
-  {n:'Viagem — Japão',       alvo:18000,atual:5000, prazo:'2027-10-01',onde:'Caixinha Turbo 120% do CDI',taxa:.1668},
-  {n:'Trocar o notebook',    alvo:9000, atual:1200, prazo:'2027-03-01',onde:'CDB liquidez diária',taxa:.1529},
-  {n:'Entrada do apartamento',alvo:60000,atual:6700,prazo:'2030-01-01',onde:'Tesouro IPCA+',taxa:.1150},
-];
-
-/* ─── utilidades ─── */
-let ocultar=false;
-const _brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const R$=n=>ocultar?'R$ ••••':_brl(n);
-const pc=(n,d=1)=>(n*100).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})+'%';
-const soma=a=>a.reduce((s,x)=>s+x,0);
-const aoMes=a=>Math.pow(1+a,1/12)-1;
-const irDe=d=>d<=180?.225:d<=360?.20:d<=720?.175:.15;
-const mesesAte=iso=>Math.max(1,Math.round((new Date(iso)-new Date())/2629800000));
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-/* ─── totais ─── */
-const T={};
-T.contas=soma(CONTAS.map(c=>c.v));
-T.parado=soma(CONTAS.filter(c=>!c.rende).map(c=>c.v));
-T.caix=soma(CAIXINHAS.map(c=>c.v));
-T.classes=ACERVO.map(c=>({...c,v:soma(c.itens.map(i=>i.v))}));
-T.inv=soma(T.classes.map(c=>c.v));
-T.div=soma(DIVIDAS.map(d=>d.v));
-T.bruto=T.contas+T.caix+T.inv;
-T.liq=T.bruto-T.div;
-T.gastos=soma(GASTOS.map(g=>g.v));
-T.ess=soma(GASTOS.filter(g=>g.ess).map(g=>g.v));
-T.sobra=RENDA-T.gastos;
-T.liquidez=T.caix+8300+4150;
-T.meses=T.liquidez/T.ess;
-const RISCO=['Ações do Brasil','Fundos imobiliários','Investimento internacional','Criptoativos','Fundos multimercado'];
-const vRisco=soma(T.classes.filter(c=>RISCO.includes(c.c)).map(c=>c.v));
-const vPrev=soma(T.classes.filter(c=>c.c==='Previdência privada').map(c=>c.v));
-const vSeg=T.bruto-T.parado-vRisco-vPrev;
-const ANEL=[
-  {n:'Parado, sem render',    v:T.parado,cor:'#E0705A'},
-  {n:'Rendendo com segurança',v:vSeg,    cor:'#5FBB80'},
-  {n:'Rendendo com risco',    v:vRisco,  cor:'#DCA84B'},
-  {n:'Aposentadoria',         v:vPrev,   cor:'#A388E0'},
-];
-
-/* ═══════════ MOTOR DO ORÁCULO ═══════════
-   Cada leitura tem: frase simples (o que aparece de cara) e a conta
-   (que só aparece se a pessoa pedir). Nenhuma emite ordem de compra. */
-function ler(){
-  const i=aoMes(MERCADO.cdi),out=[];
-
-  const colchao=T.ess*.4, ocioso=Math.max(0,T.parado-colchao), perda=ocioso*i;
-  out.push({id:'parado',sev:'urgente',t:'Você tem dinheiro parado',
-    plain:`${R$(ocioso)} estão na conta sem render nada. Guardando esse valor em qualquer aplicação de liquidez imediata, seriam <b>${R$(perda)} por mês</b> a mais no seu bolso — sem travar o dinheiro.`,
-    acao:'Ver onde posso colocar',
-    math:`Na conta         ${_brl(T.parado)}\nGuardo p/ o mês  ${_brl(colchao)}\nSobra parado     ${_brl(ocioso)}\n\nCDI ao mês       ${pc(i,2)}\nDeixo de ganhar  ${_brl(perda)} por mês\nEm 12 meses      ${_brl(ocioso*MERCADO.cdi)}`,
-    opts:['Caixinha com resgate imediato, rendendo 100% do CDI','Caixinha Turbo — rende mais, mas tem teto de R$ 5.000','Tesouro Selic ou CDB de liquidez diária','Abater a dívida mais cara'],
-    con:'Custo de oportunidade — todo dinheiro parado tem um preço'});
-
-  const cara=[...DIVIDAS].sort((a,b)=>b.taxa-a.taxa)[0];
-  out.push({id:'divida',sev:'urgente',t:'Sua dívida cresce mais rápido que seu investimento',
-    plain:`O ${cara.n.toLowerCase()} cobra <b>${pc(cara.taxa)} ao mês</b>. Sua melhor aplicação rende ${pc(i,2)} ao mês. Cada real usado para abater essa dívida vale mais do que qualquer investimento seguro hoje.`,
-    acao:'Ver a conta',
-    math:`Dívida       ${pc(cara.taxa)} ao mês → ${pc(Math.pow(1+cara.taxa,12)-1,0)} ao ano\nAplicação    ${pc(i,2)} ao mês → ${pc(MERCADO.cdi)} ao ano\nDiferença    ${pc(cara.taxa-i,2)} ao mês a favor de quitar\n\nSaldo hoje         ${_brl(cara.v)}\nSe ficar 12 meses  ${_brl(cara.v*Math.pow(1+cara.taxa,12))}`,
-    opts:['Quitar tudo, mantendo a reserva de emergência intacta','Quitar em partes, com o que está parado na conta','Buscar portabilidade para uma taxa menor'],
-    con:'Abater dívida cara é o único retorno garantido que existe'});
-
-  out.push({id:'reserva',sev:T.meses>=6?'saudavel':'atencao',t:'Sua reserva de emergência está de pé',
-    plain:`Você tem ${R$(T.liquidez)} disponíveis rapidamente — o suficiente para <b>${T.meses.toFixed(1)} meses</b> sem nenhuma renda entrando. A referência é de 6 meses.`,
-    acao:'Ver como calculei',
-    math:`Gastos essenciais  ${_brl(T.ess)} por mês\nAlvo de 6 meses    ${_brl(T.ess*6)}\nVocê tem           ${_brl(T.liquidez)}\nCobre              ${T.meses.toFixed(1)} meses`,
-    opts:['Manter esse valor onde está, com resgate rápido','Se a renda for variável, mirar 9 a 12 meses'],
-    con:'Poupança de precaução — o colchão que evita recorrer ao crédito caro'});
-
-  const an=GASTOS.map(g=>({...g,d:(g.v-g.m3)/g.m3})).filter(g=>g.d>.25).sort((a,b)=>b.d-a.d);
-  if(an.length){const a=an[0];
-    out.push({id:'gasto',sev:'atencao',t:`${a.cat} fugiu do seu padrão`,
-      plain:`Você gastou <b>${R$(a.v-a.m3)} a mais</b> que a sua própria média dos últimos 3 meses. Isso é ${pc((a.v-a.m3)/T.sobra,0)} de tudo que sobrou no mês.`,
-      acao:'Ver as outras categorias',
-      math:`Média dos 3 meses  ${_brl(a.m3)}\nEste mês           ${_brl(a.v)}\nDiferença          +${pc(a.d,0)}\n\n`+an.slice(1).map(x=>`${x.cat.padEnd(18)} +${pc(x.d,0)}`).join('\n'),
-      con:'Comparação com o seu próprio histórico, não com a média dos outros'});}
-
-  const rec=GASTOS.find(g=>g.rec);
-  out.push({id:'assin',sev:'atencao',t:'9 assinaturas cobrando todo mês',
-    plain:`São ${R$(rec.v)} por mês, ou <b>${R$(rec.v*12)} por ano</b>. Duas delas não são usadas há mais de 60 dias.`,
-    acao:'Ver o efeito no longo prazo',
-    math:`Por mês            ${_brl(rec.v)}\nPor ano            ${_brl(rec.v*12)}\nSe rendessem 5 anos ${_brl(rec.v*(Math.pow(1+aoMes(MERCADO.cdi),60)-1)/aoMes(MERCADO.cdi))}`,
-    opts:['Cancelar as duas sem uso','Trocar planos mensais por anuais nas que você usa'],
-    con:'Custo silencioso — pequeno por mês, grande no acumulado'});
-
-  const p=[T.ess/RENDA,(T.gastos-T.ess)/RENDA,T.sobra/RENDA];
-  out.push({id:'orc',sev:p[2]<.2?'atencao':'saudavel',t:'Como sua renda se divide',
-    plain:`<b>${pc(p[0],0)}</b> vão para contas obrigatórias, <b>${pc(p[1],0)}</b> para coisas que você escolhe e <b>${pc(p[2],0)}</b> sobram. A referência mais usada sugere guardar pelo menos 20%.`,
-    acao:'Ver a referência completa',
-    math:`Obrigatórias  ${pc(p[0],0).padStart(5)}   (referência 50%)\nEscolhas      ${pc(p[1],0).padStart(5)}   (referência 30%)\nGuardado      ${pc(p[2],0).padStart(5)}   (referência 20%)\n\nFalta por mês ${_brl(Math.max(0,RENDA*.2-T.sobra))}`,
-    con:'Regra 50/30/20 — um ponto de partida, não uma lei'});
-
-  const liq=MERCADO.cdi*(1-.175),real=(1+liq)/(1+MERCADO.ipca)-1;
-  out.push({id:'real',sev:'contexto',t:'O que sobra depois da inflação',
-    plain:`Render ${pc(MERCADO.cdi)} ao ano parece muito, mas depois do imposto e da inflação o ganho real de poder de compra é de <b>${pc(real)} ao ano</b>.`,
-    acao:'Ver a conta',
-    math:`Rendimento anunciado  ${pc(MERCADO.cdi)}\nDepois do imposto     ${pc(liq)}\nInflação (IPCA 12m)   ${pc(MERCADO.ipca)}\nGanho real            ${pc(real)}\n\nSeu dinheiro dobra de valor real em ${(72/(real*100)).toFixed(0)} anos`,
-    con:'Rendimento real — o número que realmente importa'});
-
-  const nu=CONTAS[0].v+T.caix;
-  out.push({id:'conc',sev:'contexto',t:'Boa parte está num banco só',
-    plain:`${R$(nu)} — ${pc(nu/T.bruto,0)} do que você tem — estão no Nubank. Ainda dentro da proteção do FGC, que cobre até R$ 250 mil por banco.`,
-    acao:'Ver os limites',
-    math:`No Nubank        ${_brl(nu)}\nLimite do FGC    ${_brl(250000)} por banco\nFolga            ${_brl(250000-nu)}\nLimite total     ${_brl(1000000)} por CPF a cada 4 anos`,
-    con:'Diversificar não é só entre tipos de investimento, é entre bancos também'});
-
-  const ordem={urgente:0,atencao:1,contexto:2,saudavel:3};
-  return out.sort((a,b)=>ordem[a.sev]-ordem[b.sev]);
+if(!PERFIS||!PERFIS.length){
+  PERFIS=[{id:uid(),nome:'Eu',emoji:'◬',cor:'--ouro'}];
+  perfilAtivo=PERFIS[0].id;
+  guardar('perfis',PERFIS);guardar('perfilAtivo',perfilAtivo);
 }
-const LEITURAS=ler();
+if(!PERFIS.some(p=>p.id===perfilAtivo))perfilAtivo=PERFIS[0].id;
+const perfil=()=>PERFIS.find(p=>p.id===perfilAtivo);
 
-const DESTINOS=[
-  {n:'Deixar na conta',           aa:0,     ir:false,ob:'Não rende nada'},
-  {n:'Poupança',                  aa:.0837, ir:false,ob:'Sem imposto, mas rende só no aniversário'},
-  {n:'Caixinha 100% do CDI',      aa:.139,  ir:true, ob:'Resgate imediato, com proteção do FGC'},
-  {n:'Caixinha Turbo 120% do CDI',aa:.1668, ir:true, teto:5000,ob:'Teto de R$ 5.000 e exige movimentar a conta'},
-  {n:'Tesouro Selic',             aa:.138,  ir:true, ob:'Resgate em 1 dia, o mais seguro do país'},
-  {n:'CDB liquidez diária 110%',  aa:.1529, ir:true, ob:'Resgate no mesmo dia, com FGC'},
-  {n:'LCI 95% do CDI',            aa:.132,  ir:false,ob:'Sem imposto, mas fica preso 9 meses'},
-  {n:'Abater a fatura parcelada', aa:Math.pow(1.112,12)-1,ir:false,ob:'Retorno garantido: o juro que você deixa de pagar'},
+/* ═════════ MODELO ═════════ */
+const CAT_PADRAO=[
+  {n:'Moradia',e:true,g:'ᛗ'},{n:'Mercado',e:true,g:'ᛒ'},{n:'Transporte',e:true,g:'ᚱ'},
+  {n:'Saúde',e:true,g:'ᛁ'},{n:'Contas de casa',e:true,g:'ᚹ'},{n:'Educação',e:true,g:'ᛖ'},
+  {n:'Restaurantes',e:false,g:'ᚠ'},{n:'Assinaturas',e:false,g:'ᛝ'},{n:'Lazer',e:false,g:'ᚦ'},
+  {n:'Roupas',e:false,g:'ᛚ'},{n:'Presentes',e:false,g:'ᛉ'},{n:'Pets',e:false,g:'ᚲ'},
 ];
+const CAT_ENTRADA=['Salário','Vale refeição','Freelance','Rendimentos','Reembolso','Venda','13º e férias','Presente recebido'];
+const CLASSES=['Renda fixa pós-fixada','Renda fixa prefixada','Protegido da inflação','Renda fixa isenta de IR',
+  'Ações do Brasil','Fundos imobiliários','Investimento internacional','Criptoativos','Previdência privada','Fundos multimercado'];
 
-/* ═══════════ COMPONENTES ═══════════ */
-const anel=()=>{const R=76,C=2*Math.PI*R;let o=0;
-  const s=ANEL.map(a=>{const L=a.v/T.bruto*C;const el=`<circle cx="93" cy="93" r="${R}" fill="none" stroke="${a.cor}" stroke-width="15" stroke-linecap="butt" stroke-dasharray="${Math.max(0,L-3)} ${C-L+3}" stroke-dashoffset="${-o}"/>`;o+=L;return el}).join('');
-  return `<svg width="186" height="186" viewBox="0 0 186 186" aria-hidden="true"><circle cx="93" cy="93" r="${R}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="15"/>${s}</svg>`};
+const vazio=()=>({contas:[],investimentos:[],dividas:[],cartoes:[{id:uid(),nome:'Cartão de crédito',fechamento:28,vencimento:8}],
+  lancamentos:[],recorrentes:[],orcamento:{},aporteMeta:0,metas:[],chat:[],
+  categorias:CAT_PADRAO.map(c=>({...c})),config:{cdi:.139,ipca:.0444,selic:.14}});
 
-const card=(o)=>`<div class="card${o.tap?' tap':''}" style="--acc:${o.cor}"${o.tap?` role="button" tabindex="0" data-act="${o.tap}"${o.val?` data-val="${o.val}"`:''}`:''}><div class="in">${o.html}</div></div>`;
+let DB=buscar('db.'+perfilAtivo,null)||vazio();
+const persistir=()=>guardar('db.'+perfilAtivo,DB);
+function trocarPerfil(id){
+  persistir();perfilAtivo=id;guardar('perfilAtivo',id);
+  DB=buscar('db.'+id,null)||vazio();mesVisto=mesAtual();tela='inicio';fecharFolha();atualizar();
+}
 
-/* ═══════════ TELAS ═══════════ */
+/* ═════════ FORMATOS ═════════ */
+let ocultar=buscar('ocultar',false);
+const _brl=n=>(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const R$=n=>ocultar?'R$ ••••':_brl(n);
+const pc=(n,d=0)=>((n||0)*100).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})+'%';
+const soma=a=>a.reduce((s,x)=>s+(x||0),0);
+const aoMes=a=>Math.pow(1+a,1/12)-1;
+const aoDia=a=>Math.pow(1+a,1/365)-1;
+const irDe=d=>d<=180?.225:d<=360?.20:d<=720?.175:.15;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hojeISO=()=>new Date().toISOString().slice(0,10);
+const mesDe=i=>String(i).slice(0,7);
+const mesAtual=()=>hojeISO().slice(0,7);
+const nomeMes=m=>{const[a,b]=m.split('-');return new Date(a,b-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})};
+const diasNoMes=m=>{const[a,b]=m.split('-').map(Number);return new Date(a,b,0).getDate()};
+const catDe=n=>DB.categorias.find(c=>c.n===n)||{n,e:false,g:'◇'};
+let mesVisto=mesAtual();
+
+/* ═════════ CÉREBRO: ENTENDER ═════════ */
+const sa=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const NUM_ESC={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,
+  quinze:15,vinte:20,trinta:30,quarenta:40,cinquenta:50,sessenta:60,setenta:70,oitenta:80,noventa:90,cem:100,mil:1000};
+
+function extrairValor(txt){
+  const t=sa(txt);let m;
+  if(m=t.match(/(?:r\$\s*)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?)/))return parseFloat(m[1].replace(/\./g,'').replace(',','.'));
+  if(m=t.match(/(?:r\$\s*)?(\d+,\d{1,2})/))return parseFloat(m[1].replace(',','.'));
+  if(m=t.match(/(\d+(?:[.,]\d+)?)\s*(mil|k)\b/))return parseFloat(m[1].replace(',','.'))*1000;
+  if(m=t.match(/(?:r\$\s*)?(?<!dia\s)(\d+)(?!\s*(?:%|dias?|meses|anos|x))/))return parseFloat(m[1]);
+  for(const[p,v]of Object.entries(NUM_ESC))if(new RegExp(`\\b${p}\\b`).test(t))return v;
+  return null;
+}
+const MESES=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function extrairPeriodo(txt){
+  const t=sa(txt);
+  const desloca=n=>{const[a,m]=mesAtual().split('-').map(Number);return new Date(a,m-1-n,1).toISOString().slice(0,7)};
+  if(/mes passado|mes anterior|ultimo mes/.test(t))return{meses:[desloca(1)],rotulo:'no mês passado'};
+  if(/retrasado/.test(t))return{meses:[desloca(2)],rotulo:'dois meses atrás'};
+  let m;
+  if(m=t.match(/ultimos? (\d+) meses/)){const n=Math.min(12,+m[1]);
+    return{meses:Array.from({length:n},(_,i)=>desloca(i)),rotulo:`nos últimos ${n} meses`}}
+  if(/(esse|este|nesse|neste) ano|no ano/.test(t)){const a=mesAtual().slice(0,4);
+    return{meses:Array.from({length:12},(_,i)=>`${a}-${String(i+1).padStart(2,'0')}`),rotulo:'neste ano'}}
+  if(/\bhoje\b/.test(t))return{meses:[mesAtual()],dia:hojeISO(),rotulo:'hoje'};
+  if(/\bontem\b/.test(t)){const d=new Date();d.setDate(d.getDate()-1);
+    return{meses:[mesDe(d.toISOString())],dia:d.toISOString().slice(0,10),rotulo:'ontem'}}
+  if(/(essa|esta|nessa) semana/.test(t))return{meses:[mesAtual()],semana:true,rotulo:'nesta semana'};
+  for(let i=0;i<12;i++)if(new RegExp(`\\b${MESES[i]}\\b`).test(t)){
+    const a=mesAtual().slice(0,4);return{meses:[`${a}-${String(i+1).padStart(2,'0')}`],rotulo:`em ${MESES[i]}`}}
+  return{meses:[mesVisto],rotulo:mesVisto===mesAtual()?'neste mês':'em '+nomeMes(mesVisto),padrao:true};
+}
+function perto(a,b){
+  a=sa(a);b=sa(b);
+  if(a===b)return 0;
+  if(a.length<3||b.length<3)return 9;
+  if(b.includes(a)||a.includes(b))return 1;
+  const d=Array.from({length:a.length+1},(_,i)=>[i,...Array(b.length).fill(0)]);
+  for(let j=0;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[a.length][b.length];
+}
+const SINONIMOS={
+  'Mercado':['mercado','supermercado','compras','feira','hortifruti','acougue','padaria','atacadao','carrefour','assai'],
+  'Restaurantes':['restaurante','ifood','delivery','lanche','almoco','janta','jantar','pizza','hamburguer','cafe','cerveja','rappi','comida','padoca'],
+  'Transporte':['uber','99','gasolina','combustivel','posto','onibus','metro','estacionamento','pedagio','corrida','passagem','carro'],
+  'Moradia':['aluguel','condominio','iptu','financiamento','casa','apartamento','reforma'],
+  'Contas de casa':['luz','energia','agua','gas','internet','telefone','celular','wifi','conta de luz'],
+  'Saúde':['farmacia','remedio','medico','dentista','consulta','exame','plano de saude','hospital','psicologo','terapia'],
+  'Educação':['curso','faculdade','escola','livro','mensalidade','ingles','aula'],
+  'Assinaturas':['assinatura','netflix','spotify','disney','prime','hbo','max','youtube','streaming','icloud','google one'],
+  'Lazer':['cinema','show','ingresso','bar','viagem','hotel','passeio','academia','jogo','festa','role'],
+  'Roupas':['roupa','tenis','sapato','camisa','calca','vestido','shopping','shein','renner','zara'],
+  'Presentes':['presente','aniversario','natal','flores'],
+  'Pets':['pet','racao','veterinario','petshop','cachorro','gato'],
+};
+const SIN_ENTRADA={
+  'Salário':['salario','pagamento','holerite','contracheque','emprego'],
+  'Vale refeição':['vale refeicao','vr','vale alimentacao','va','ticket','sodexo','alelo','caju','flash','beneficio'],
+  'Freelance':['freela','freelance','bico','projeto','servico','job'],
+  'Rendimentos':['rendimento','juros','dividendo','rendeu'],
+  'Reembolso':['reembolso','estorno','devolucao','devolveram'],
+  'Venda':['vendi','venda','vendeu'],
+  '13º e férias':['decimo','ferias','bonus','plr'],
+  'Presente recebido':['presente','me deram'],
+};
+function extrairCategoria(txt){
+  const t=sa(txt),palavras=t.split(/[\s,.!?]+/).filter(p=>p.length>2);
+  for(const[cat,lista]of Object.entries(SINONIMOS)){
+    if(!DB.categorias.some(c=>c.n===cat))continue;
+    for(const s of lista)if(new RegExp(`\\b${s}\\b`).test(t))return cat;
+  }
+  let melhor=null,melhorD=3;
+  for(const c of DB.categorias){
+    const lim=Math.max(1,Math.floor(sa(c.n).length/5));
+    for(const p of palavras){
+      if(p.length<4)continue;
+      if(Math.abs(p.length-sa(c.n).length)>3)continue;
+      const d=perto(p,c.n);
+      if(d<=lim&&d<melhorD){melhorD=d;melhor=c.n}
+    }
+  }
+  return melhor;
+}
+function extrairCategoriaEntrada(txt){
+  const t=sa(txt);
+  for(const[cat,lista]of Object.entries(SIN_ENTRADA))
+    for(const s of lista)if(new RegExp(`\\b${s}\\b`).test(t))return cat;
+  return null;
+}
+const MEIOS=[
+  [/\bcredito|cartao|no credito|parcelad/,'credito'],
+  [/\bdebito|pix|transferenci/,'debito'],
+  [/\bdinheiro|especie/,'dinheiro'],
+  [/\bvale|vr\b|va\b|refeicao|alimentacao|ticket|sodexo|alelo|caju|flash/,'beneficio'],
+];
+const REGRAS=[
+  {id:'registrar_saida',p:[[/\b(gastei|paguei|comprei|torrei|gastou|saiu)\b/,4],[/\bgasto de\b/,3]]},
+  {id:'registrar_entrada',p:[[/\b(recebi|ganhei|caiu|entrou|depositaram|me pagaram)\b/,4]]},
+  {id:'registrar_aporte',p:[[/\b(investi|apliquei|aportei|guardei|poupei)\b/,4]]},
+  {id:'quanto_gastei',p:[[/quanto.{0,12}(gastei|gasto|saiu|torrei)/,4],[/(total|soma).{0,10}gast/,3],[/gastei quanto/,4]]},
+  {id:'onde_gastei',p:[[/(onde|no que|em que|com o que|pra onde).{0,20}(gast|dinheiro|foi|vai|ta indo|esta indo)/,4],[/maior(es)? gasto/,4],[/o que mais (gasto|pesa|consome)/,4],[/resumo/,2]]},
+  {id:'posso_gastar',p:[[/(posso|consigo|da pra|devo|cabe).{0,20}(gastar|comprar|pagar|torrar|investir|parcelar)/,4],[/(vale a pena|compensa).{0,12}comprar/,3],[/quero comprar/,3]]},
+  {id:'sobra',p:[[/quanto.{0,15}(sobrou|sobra|resta|restou|posso usar|tenho pra gastar)/,4],[/(saldo|dinheiro).{0,6}(do mes|disponivel|livre)/,3]]},
+  {id:'patrimonio',p:[[/quanto (eu )?tenho(?!.{0,10}pra gastar)/,4],[/patrimonio|total que tenho/,4]]},
+  {id:'comparar',p:[[/(mais|menos|melhor|pior).{0,15}(que|do que).{0,18}(mes passado|antes|mes anterior|normal|media|costume)/,4],[/compar/,3],[/(gastei|foi) mais/,3]]},
+  {id:'previsao',p:[[/(como|vou|vai).{0,20}(fechar|terminar|acabar)/,4],[/projec|previsao|estimativa|vai sobrar|no ritmo/,4]]},
+  {id:'orcamento',p:[[/(dentro|fora|estourei|passei).{0,15}(do )?(plano|orcamento|limite)/,4],[/meu (plano|orcamento)/,3],[/como (esta|ta) o plano/,4]]},
+  {id:'assinaturas',p:[[/assinatura|streaming|mensalidade/,4],[/recorrente|gasto fixo|fixos/,3]]},
+  {id:'reserva',p:[[/reserva|emergencia|colchao/,4]]},
+  {id:'divida',p:[[/divida|fatura|emprestimo|rotativo|parcelamento|devo quanto/,4]]},
+  {id:'parado',p:[[/parad|render|rendimento|aplicar|investir onde|onde po(r|nho)|dinheiro sobrando/,4]]},
+  {id:'meta',p:[[/meta|objetivo|juntar|quando (eu )?consigo|falta quanto/,4]]},
+  {id:'credito_plano',p:[[/(vale|compensa).{0,20}(cartao|credito)/,4],[/pagar tudo no (cartao|credito)/,4],[/float|flutuacao/,3]]},
+  {id:'renda',p:[[/quanto (eu )?(ganho|recebo|entra)/,4],[/minha renda|meu salario/,4]]},
+  {id:'ajuda',p:[[/^(oi|ola|opa|e ai|bom dia|boa tarde|boa noite|hey)\b/,4],[/(o que|oq) (voce|vc) (faz|sabe|pode)/,4],[/\bajuda\b|como funciona|me ensina/,3]]},
+];
+let ctxChat={ultimaIntencao:null,ultimaCategoria:null};
+
+function entender(txt){
+  const t=sa(txt),valor=extrairValor(txt);
+  const ehPergunta=/\b(quanto|quando|onde|como|qual|quais|porque|sera|posso|consigo|da pra|vale a pena|compensa|tenho|estou|to)\b|\?/.test(t);
+  const notas=REGRAS.map(r=>{
+    let s=0;for(const[re,peso]of r.p)if(re.test(t))s+=peso;
+    if(r.id.startsWith('registrar')){if(valor===null)s=0;else if(ehPergunta)s-=3}
+    return{id:r.id,score:s};
+  }).sort((a,b)=>b.score-a.score);
+  let melhor=notas[0].score>0?notas[0]:{id:'desconhecido',score:0};
+  const meio=(MEIOS.find(([re])=>re.test(t))||[])[1]||null;
+  let categoria=melhor.id==='registrar_entrada'?extrairCategoriaEntrada(txt):extrairCategoria(txt);
+  if(melhor.score===0&&ctxChat.ultimaIntencao&&/^(e |mas |que tal )?(o |no |na )?(mes passado|ontem|hoje|esse ano|semana|mercado|restaurante)/.test(t))
+    melhor={id:ctxChat.ultimaIntencao,score:2,herdado:true};
+  if(melhor.id==='desconhecido'&&valor&&categoria&&!ehPergunta)melhor={id:'registrar_saida',score:2};
+  if(!categoria&&ctxChat.ultimaCategoria&&/\be (nele|nela|nisso|nesse|nessa)\b|^e (o|a) /.test(t))categoria=ctxChat.ultimaCategoria;
+  return{intencao:melhor.id,confianca:Math.min(1,melhor.score/4),valor,meio,categoria,ehPergunta,periodo:extrairPeriodo(txt),texto:txt};
+}
+
+/* ═════════ CÁLCULOS ═════════ */
+let T={};
+function lancDe(meses,dia,semana){
+  let l=DB.lancamentos.filter(x=>meses.includes(mesDe(x.data)));
+  if(dia)l=l.filter(x=>x.data===dia);
+  if(semana){const d=new Date();d.setDate(d.getDate()-7);const lim=d.toISOString().slice(0,10);l=l.filter(x=>x.data>=lim)}
+  return l;
+}
+function calcular(){
+  const m=mesVisto,lanc=DB.lancamentos.filter(l=>mesDe(l.data)===m);
+  T.mes=m;T.lanc=lanc;
+  T.entradas=soma(lanc.filter(l=>l.tipo==='entrada'&&l.cat!=='Vale refeição').map(l=>l.valor));
+  T.beneficioIn=soma(lanc.filter(l=>l.tipo==='entrada'&&l.cat==='Vale refeição').map(l=>l.valor));
+  T.saidas=soma(lanc.filter(l=>l.tipo==='saida'&&l.meio!=='beneficio').map(l=>l.valor));
+  T.beneficioOut=soma(lanc.filter(l=>l.tipo==='saida'&&l.meio==='beneficio').map(l=>l.valor));
+  T.beneficio=T.beneficioIn-T.beneficioOut;
+  T.aportes=soma(lanc.filter(l=>l.tipo==='aporte').map(l=>l.valor));
+  T.sobra=T.entradas-T.saidas-T.aportes;
+
+  const porCat=new Map();
+  lanc.filter(l=>l.tipo==='saida').forEach(l=>porCat.set(l.cat,(porCat.get(l.cat)||0)+l.valor));
+  T.categorias=DB.categorias.map(c=>({...c,gasto:porCat.get(c.n)||0,plano:DB.orcamento[c.n]||0}))
+    .filter(c=>c.gasto>0||c.plano>0).sort((a,b)=>b.gasto-a.gasto);
+  porCat.forEach((v,k)=>{if(!T.categorias.some(c=>c.n===k))T.categorias.push({n:k,e:false,g:'◇',gasto:v,plano:0})});
+  T.gastoTotal=T.saidas+T.beneficioOut;
+  T.planoTotal=soma(Object.values(DB.orcamento));
+  T.essenciais=soma(T.categorias.filter(c=>c.e).map(c=>c.gasto));
+  T.desejos=T.gastoTotal-T.essenciais;
+
+  const ehAtual=m===mesAtual();
+  T.ehAtual=ehAtual;
+  T.diaHoje=ehAtual?new Date().getDate():diasNoMes(m);
+  T.diasMes=diasNoMes(m);
+  T.diasRestantes=Math.max(0,T.diasMes-T.diaHoje);
+  T.projecao=ehAtual&&T.diaHoje>2?T.saidas/T.diaHoje*T.diasMes:T.saidas;
+  T.restanteOrc=T.planoTotal-T.saidas;
+  T.porDia=ehAtual&&T.diasRestantes>0?Math.max(0,T.restanteOrc)/T.diasRestantes:0;
+
+  T.noCredito=soma(lanc.filter(l=>l.tipo==='saida'&&l.meio==='credito').map(l=>l.valor));
+  T.fatiaCredito=T.saidas>0?T.noCredito/T.saidas:0;
+  T.faturaAberta=soma(DB.lancamentos.filter(l=>l.meio==='credito'&&!l.pago).map(l=>l.valor));
+
+  T.emConta=soma(DB.contas.map(c=>c.saldo));
+  T.parado=soma(DB.contas.filter(c=>!c.rende).map(c=>c.saldo));
+  T.invest=soma(DB.investimentos.map(i=>i.valor));
+  T.divida=soma(DB.dividas.map(d=>d.saldo));
+  T.bruto=T.emConta+T.invest;
+  T.liquido=T.bruto-T.divida-T.faturaAberta;
+  T.liquidez=soma(DB.contas.filter(c=>c.rende).map(c=>c.saldo))+soma(DB.investimentos.filter(i=>i.liquido).map(i=>i.valor));
+  T.mesesReserva=T.essenciais>0?T.liquidez/T.essenciais:0;
+
+  T.historico=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);
+    const mm=d.toISOString().slice(0,7),ls=DB.lancamentos.filter(l=>mesDe(l.data)===mm);
+    T.historico.push({m:mm,saidas:soma(ls.filter(l=>l.tipo==='saida').map(l=>l.valor)),
+      entradas:soma(ls.filter(l=>l.tipo==='entrada').map(l=>l.valor)),
+      curto:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','')});
+  }
+  const h=T.historico.slice(0,5).filter(x=>x.saidas>0&&x.m!==m).slice(-3);
+  T.media3=h.length?soma(h.map(x=>x.saidas))/h.length:0;
+
+  // recorrentes ainda não lançados neste mês
+  T.pendentes=DB.recorrentes.filter(r=>r.ativo!==false&&
+    !DB.lancamentos.some(l=>l.recId===r.id&&mesDe(l.data)===m));
+  T.aVir=soma(T.pendentes.filter(r=>r.tipo==='entrada').map(r=>r.valor))
+        -soma(T.pendentes.filter(r=>r.tipo!=='entrada').map(r=>r.valor));
+
+  T.vazio=DB.lancamentos.length===0;
+  LEITURAS=leituras();
+}
+
+/* ═════════ CÉREBRO: LEITURAS PROATIVAS ═════════ */
+let LEITURAS=[];
+function leituras(){
+  const o=[],cdiM=aoMes(DB.config.cdi);
+  if(T.vazio)return o;
+  if(T.planoTotal>0&&T.ehAtual&&T.diaHoje>2){
+    const acima=T.projecao>T.planoTotal;
+    o.push({id:'ritmo',sev:acima?'atencao':'saudavel',t:acima?'Você está gastando rápido demais':'Seu ritmo cabe no plano',
+      txt:acima?`No dia ${T.diaHoje} você já gastou <b>${R$(T.saidas)}</b>. Nesse ritmo o mês fecha em ${R$(T.projecao)}, ${R$(T.projecao-T.planoTotal)} acima do plano.`
+               :`No dia ${T.diaHoje} você gastou ${R$(T.saidas)} e deve fechar perto de <b>${R$(T.projecao)}</b>, dentro do plano.`});
+  }
+  const est=T.categorias.filter(c=>c.plano>0&&c.gasto>c.plano);
+  if(est.length)o.push({id:'estouro',sev:'atencao',t:`${est[0].n} passou do planejado`,
+    txt:`Planejou ${R$(est[0].plano)} e gastou <b>${R$(est[0].gasto)}</b>.`});
+  if(DB.dividas.length){
+    const c=[...DB.dividas].sort((a,b)=>b.taxa-a.taxa)[0];
+    if(c.taxa>cdiM)o.push({id:'divida',sev:'urgente',t:'Sua dívida cresce mais que seu investimento',
+      txt:`${c.nome} cobra <b>${pc(c.taxa,1)} ao mês</b>. Sua melhor aplicação rende ${pc(cdiM,2)}.`});
+  }
+  if(T.faturaAberta>T.liquidez&&T.faturaAberta>0)o.push({id:'fatura',sev:'urgente',t:'A fatura não está coberta',
+    txt:`Fatura de <b>${R$(T.faturaAberta)}</b> contra ${R$(T.liquidez)} disponíveis.`});
+  if(T.parado>T.essenciais*.3){const oc=T.parado-T.essenciais*.3;
+    o.push({id:'parado',sev:'atencao',t:'Dinheiro parado na conta',txt:`${R$(oc)} sem render — ${R$(oc*cdiM)} por mês deixados na mesa.`})}
+  if(T.pendentes.length)o.push({id:'pendentes',sev:'atencao',t:`${T.pendentes.length} lançamento(s) fixo(s) pendente(s)`,
+    txt:'Você marcou como recorrentes mas ainda não lançou neste mês.'});
+  if(T.essenciais>0)o.push({id:'reserva',sev:T.mesesReserva>=6?'saudavel':T.mesesReserva<3?'urgente':'atencao',
+    t:'Sua reserva de emergência',txt:`Cobre <b>${T.mesesReserva.toFixed(1)} meses</b> das suas contas obrigatórias.`});
+  const ordem={urgente:0,atencao:1,contexto:2,saudavel:3};
+  return o.sort((a,b)=>ordem[a.sev]-ordem[b.sev]);
+}
+
+/* ═════════ CÉREBRO: RACIOCINAR E RESPONDER ═════════ */
+const grafico=itens=>{const mx=Math.max(...itens.map(i=>i.v))||1;
+  return `<div class="gr">${itens.map(i=>`<div class="gl"><span class="n">${esc(i.n)}</span>
+    <span class="b"><i style="width:${Math.max(3,i.v/mx*100)}%"></i></span>
+    <span class="v">${R$(i.v)}</span></div>`).join('')}</div>`};
+const D=v=>`<span class="destaque">${R$(v)}</span>`;
+
+function somaPeriodo(p,cat){
+  let l=lancDe(p.meses,p.dia,p.semana).filter(x=>x.tipo==='saida');
+  if(cat)l=l.filter(x=>x.cat===cat);
+  return {total:soma(l.map(x=>x.valor)),lanc:l};
+}
+
+function responder(q){
+  const cdiM=aoMes(DB.config.cdi),cdiD=aoDia(DB.config.cdi);
+  const cat=q.categoria,p=q.periodo;
+  ctxChat.ultimaIntencao=q.intencao;
+  if(cat)ctxChat.ultimaCategoria=cat;
+
+  const semDados=()=>({html:'Ainda não tenho lançamentos suficientes para responder isso. Registre alguns gastos primeiro — pode ser aqui mesmo, é só dizer algo como <b>"gastei 40 no mercado"</b>.',chips:['gastei 40 no mercado','o que você faz?']});
+
+  switch(q.intencao){
+
+  case 'registrar_saida': case 'registrar_entrada': case 'registrar_aporte': {
+    const tipo=q.intencao.split('_')[1];
+    const categoria=q.categoria||(tipo==='aporte'?'Aporte':tipo==='entrada'?'Outra entrada':null);
+    if(!categoria)return{html:`Entendi <b>${R$(q.valor)}</b>, mas não peguei a categoria. Em que foi?`,
+      chips:DB.categorias.slice(0,6).map(c=>`${q.texto} em ${c.n.toLowerCase()}`)};
+    const l={id:uid(),data:p.dia||hojeISO(),tipo,valor:q.valor,cat:categoria,
+      meio:q.meio||(tipo==='saida'?'debito':'pix'),desc:'',pago:q.meio!=='credito'};
+    DB.lancamentos.push(l);persistir();calcular();
+    const c=T.categorias.find(x=>x.n===categoria);
+    let extra='';
+    if(tipo==='saida'&&c&&c.plano>0){
+      const rest=c.plano-c.gasto;
+      extra=rest>=0?` Em ${categoria} você já usou ${R$(c.gasto)} dos ${R$(c.plano)} do mês — restam ${D(rest)}.`
+                   :` Com isso ${categoria} passou o plano em ${D(-rest)}.`;
+    }else if(tipo==='saida'){
+      extra=` Total de ${categoria} neste mês: ${D(c?c.gasto:q.valor)}.`;
+    }else if(tipo==='aporte'&&DB.aporteMeta>0){
+      extra=` Você já investiu ${R$(T.aportes)} dos ${R$(DB.aporteMeta)} planejados.`;
+    }
+    return{html:`Anotado: <b>${_brl(q.valor)}</b> em ${categoria}${q.meio==='credito'?', no crédito':''}.${extra}`,
+      desfazer:l.id,chips:['quanto gastei esse mês?','onde meu dinheiro tá indo?']};
+  }
+
+  case 'quanto_gastei': {
+    const {total,lanc}=somaPeriodo(p,cat);
+    if(!lanc.length)return{html:`Não achei nenhum gasto${cat?` em ${cat}`:''} ${p.rotulo}.`,chips:['quanto gastei mês passado','onde meu dinheiro tá indo?']};
+    const dias=p.meses.length*30;
+    let html=`${cat?`Em <b>${cat}</b>`:'Você gastou'} ${p.rotulo}: ${D(total)} em ${lanc.length} lançamento${lanc.length>1?'s':''}.`;
+    // comparação com o período anterior equivalente
+    if(p.meses.length===1&&!p.dia&&!p.semana){
+      const [a,mm]=p.meses[0].split('-').map(Number);
+      const ant=new Date(a,mm-2,1).toISOString().slice(0,7);
+      const {total:tAnt}=somaPeriodo({meses:[ant]},cat);
+      if(tAnt>0){const d=(total-tAnt)/tAnt;
+        html+=` Isso é <b>${pc(Math.abs(d))} ${d>0?'a mais':'a menos'}</b> que no mês anterior, que fechou em ${R$(tAnt)}.`}
+    }
+    if(!cat){
+      const porC=new Map();lanc.forEach(l=>porC.set(l.cat,(porC.get(l.cat)||0)+l.valor));
+      html+=grafico([...porC.entries()].map(([n,v])=>({n,v})).sort((a,b)=>b.v-a.v).slice(0,6));
+    }else{
+      const maiores=[...lanc].sort((a,b)=>b.valor-a.valor).slice(0,4);
+      html+=grafico(maiores.map(l=>({n:l.desc||l.data.slice(8)+'/'+l.data.slice(5,7),v:l.valor})));
+      html+=`<div class="conta">Média por lançamento  ${_brl(total/lanc.length)}\nMaior gasto           ${_brl(maiores[0].valor)}\nMédia por dia         ${_brl(total/dias)}</div>`;
+    }
+    return{html,chips:cat?['e mês passado?','onde meu dinheiro tá indo?']:['no que eu mais gasto','como vou fechar o mês?']};
+  }
+
+  case 'onde_gastei': {
+    if(!T.categorias.length)return semDados();
+    const total=T.gastoTotal;
+    const top=T.categorias.slice(0,3);
+    let html=`${p.rotulo==='neste mês'?'Neste mês':p.rotulo} saíram ${D(total)}. As três maiores:<br><b>${top.map(c=>`${c.n} ${pc(c.gasto/total)}`).join(' · ')}</b>`;
+    html+=grafico(T.categorias.slice(0,7).map(c=>({n:c.n,v:c.gasto})));
+    const obr=T.essenciais/total,esc_=T.desejos/total;
+    html+=`<div class="conta">Contas obrigatórias  ${pc(obr).padStart(5)}  ${_brl(T.essenciais)}\nEscolhas suas        ${pc(esc_).padStart(5)}  ${_brl(T.desejos)}</div>`;
+    html+=`<br>Das suas escolhas, <b>${top.filter(c=>!c.e).map(c=>c.n).join(' e ')||'nenhuma'}</b> é o que mais pesa.`;
+    return{html,chips:['quanto gastei em restaurantes','gastei mais que mês passado?','tô dentro do plano?']};
+  }
+
+  case 'posso_gastar': {
+    if(!q.valor)return{html:'Gastar quanto? Me diz o valor que eu faço as contas.',chips:['posso gastar 300?','posso gastar 1000?']};
+    const v=q.valor;
+    const c=cat?T.categorias.find(x=>x.n===cat):null;
+    const sobraProj=T.entradas-T.projecao-T.aportes;
+    const linhas=[];
+    let veredito,cor;
+
+    if(c&&c.plano>0){
+      const rest=c.plano-c.gasto;
+      linhas.push(`Plano de ${c.n}      ${_brl(c.plano)}`);
+      linhas.push(`Já gasto             ${_brl(c.gasto)}`);
+      linhas.push(`Disponível           ${_brl(rest)}`);
+      if(v<=rest)veredito=`Cabe. Sobram ${D(rest-v)} em ${c.n} depois dessa compra.`;
+      else veredito=`Não cabe no plano de ${c.n}: passaria ${D(v-rest)} do limite. Ainda dá, mas sai de outro lugar.`;
+    }
+    linhas.push(`Renda do mês         ${_brl(T.entradas)}`);
+    linhas.push(`Projeção de gastos   ${_brl(T.projecao)}`);
+    linhas.push(`Sobra prevista       ${_brl(sobraProj)}`);
+    linhas.push(`Essa compra          ${_brl(v)}`);
+    linhas.push(`Sobra depois dela    ${_brl(sobraProj-v)}`);
+
+    if(!veredito){
+      if(v<=sobraProj*.5)veredito=`Cabe com folga. Ainda sobrariam ${D(sobraProj-v)} no mês.`;
+      else if(v<=sobraProj)veredito=`Cabe, mas aperta: sobrariam só ${D(sobraProj-v)}.`;
+      else veredito=`Não cabe na sobra deste mês. Faltariam ${D(v-sobraProj)}, que sairiam do que você já tem guardado.`;
+    }
+    let html=`<b>${veredito}</b><div class="conta">${linhas.join('\n')}</div>`;
+    // o outro lado da moeda, sempre
+    const em1ano=v*Math.pow(1+cdiM,12)-v;
+    html+=`<br>Para você decidir com tudo à vista: esses ${R$(v)} rendendo a 100% do CDI virariam ${R$(v+em1ano)} em um ano. `;
+    if(T.mesesReserva<6)html+=`E sua reserva hoje cobre ${T.mesesReserva.toFixed(1)} meses, abaixo dos 6 de referência.`;
+    else html+=`Sua reserva segue coberta, com ${T.mesesReserva.toFixed(1)} meses.`;
+    return{html,chips:['quanto sobrou?','minha reserva tá boa?','como vou fechar o mês?']};
+  }
+
+  case 'sobra': {
+    if(T.vazio)return semDados();
+    let html=`Entraram ${R$(T.entradas)} e saíram ${R$(T.saidas)}${T.aportes>0?`, mais ${R$(T.aportes)} que você investiu`:''}. Sobra atual: ${D(T.sobra)}.`;
+    if(T.pendentes.length)html+=`<br><br>Mas ainda faltam lançar ${T.pendentes.length} fixo(s) deste mês${T.aVir!==0?`, o que muda a sobra em ${R$(T.aVir)}`:''}.`;
+    if(T.ehAtual&&T.diasRestantes>0)html+=`<br><br>Faltam ${T.diasRestantes} dias. No seu ritmo, o mês deve fechar com ${D(T.entradas-T.projecao-T.aportes)}.`;
+    if(T.beneficio>0)html+=`<br><br>Fora isso, você tem ${R$(T.beneficio)} de vale refeição, que só serve para comida.`;
+    return{html,chips:['como vou fechar o mês?','onde meu dinheiro tá indo?']};
+  }
+
+  case 'previsao': {
+    if(!T.ehAtual||T.diaHoje<3)return{html:'Ainda é cedo no mês para uma projeção confiável. Depois de alguns dias de lançamentos eu consigo estimar.',chips:['quanto gastei esse mês?']};
+    const fecha=T.projecao,sobraFim=T.entradas-fecha-T.aportes;
+    let html=`No dia ${T.diaHoje} você gastou ${R$(T.saidas)}, uma média de ${R$(T.saidas/T.diaHoje)} por dia. Mantendo o ritmo, o mês fecha em ${D(fecha)}.`;
+    html+=`<div class="conta">Gasto até hoje      ${_brl(T.saidas)}\nMédia por dia       ${_brl(T.saidas/T.diaHoje)}\n× ${T.diasMes} dias            ${_brl(fecha)}\nRenda do mês        ${_brl(T.entradas)}\nSobra projetada     ${_brl(sobraFim)}</div>`;
+    if(T.planoTotal>0){
+      const dif=fecha-T.planoTotal;
+      html+=`<br>Seu plano é de ${R$(T.planoTotal)}. ${dif>0?`A projeção passa dele em <b>${R$(dif)}</b>. Para fechar dentro, o gasto teria que cair para ${D(Math.max(0,T.restanteOrc)/Math.max(1,T.diasRestantes))} por dia nos ${T.diasRestantes} dias que faltam.`:`A projeção fica <b>${R$(-dif)}</b> abaixo dele.`}`;
+    }
+    return{html,chips:['tô dentro do plano?','onde meu dinheiro tá indo?']};
+  }
+
+  case 'orcamento': {
+    if(!T.planoTotal)return{html:'Você ainda não definiu um plano de gastos. Dá para montar na aba <b>Plano</b> — é lá que você diz quanto pretende gastar em cada categoria.',chips:['onde meu dinheiro tá indo?']};
+    const est=T.categorias.filter(c=>c.plano>0&&c.gasto>c.plano);
+    const ok=T.categorias.filter(c=>c.plano>0&&c.gasto<=c.plano);
+    let html=`Você planejou ${R$(T.planoTotal)} e gastou ${D(T.saidas)}. `;
+    html+=T.restanteOrc>=0?`Restam ${R$(T.restanteOrc)}${T.diasRestantes>0?`, ou ${R$(T.porDia)} por dia até o fim do mês.`:'.'}`
+                          :`Você passou ${R$(-T.restanteOrc)} do plano.`;
+    if(est.length)html+=`<br><br>Estouraram: <b>${est.map(c=>c.n).join(', ')}</b>.`+grafico(est.map(c=>({n:c.n,v:c.gasto})));
+    else html+=`<br><br>Nenhuma categoria estourou. ${ok.length} dentro do limite.`;
+    return{html,chips:['como vou fechar o mês?','no que eu mais gasto']};
+  }
+
+  case 'comparar': {
+    if(!T.media3)return{html:'Ainda não tenho meses anteriores suficientes para comparar. Depois de dois ou três meses de registro isso fica bom.',chips:['quanto gastei esse mês?']};
+    const d=(T.saidas-T.media3)/T.media3;
+    let html=`Neste mês você gastou ${D(T.saidas)}. Sua média dos 3 meses anteriores é ${R$(T.media3)} — <b>${pc(Math.abs(d))} ${d>0?'a mais':'a menos'}</b>.`;
+    html+=grafico(T.historico.map(h=>({n:h.curto,v:h.saidas})));
+    // qual categoria mudou mais
+    const antes=new Map();
+    T.historico.slice(0,-1).forEach(h=>{
+      DB.lancamentos.filter(l=>mesDe(l.data)===h.m&&l.tipo==='saida')
+        .forEach(l=>antes.set(l.cat,(antes.get(l.cat)||0)+l.valor/Math.max(1,T.historico.length-1)));
+    });
+    const varia=T.categorias.map(c=>({n:c.n,dif:c.gasto-(antes.get(c.n)||0)})).sort((a,b)=>b.dif-a.dif);
+    if(varia.length&&Math.abs(varia[0].dif)>20)
+      html+=`<br>A maior diferença veio de <b>${varia[0].n}</b>: ${varia[0].dif>0?'+':''}${R$(varia[0].dif)} contra a média.`;
+    return{html,chips:['no que eu mais gasto','como vou fechar o mês?']};
+  }
+
+  case 'patrimonio': {
+    if(!T.bruto)return{html:'Você ainda não registrou seus saldos. Dá para fazer isso em <b>Início → Seu dinheiro</b>, informando quanto tem em cada conta e investimento.',chips:['o que você faz?']};
+    let html=`Somando tudo e tirando o que você deve: ${D(T.liquido)}.`;
+    html+=grafico([{n:'Em conta',v:T.emConta},{n:'Investido',v:T.invest},
+      ...(T.divida?[{n:'Dívidas',v:T.divida}]:[]),...(T.faturaAberta?[{n:'Fatura',v:T.faturaAberta}]:[])]);
+    if(T.parado>0)html+=`<br>Desse total, <b>${R$(T.parado)}</b> estão em conta sem render nada.`;
+    if(T.essenciais>0)html+=`<br><br>Isso cobre <b>${(T.liquido/T.essenciais).toFixed(1)} meses</b> das suas contas obrigatórias, se a renda parasse hoje.`;
+    return{html,chips:['tenho dinheiro parado?','minha reserva tá boa?']};
+  }
+
+  case 'reserva': {
+    if(!T.essenciais)return semDados();
+    const alvo=T.essenciais*6;
+    let html=`Você tem ${D(T.liquidez)} de resgate rápido. Suas contas obrigatórias somam ${R$(T.essenciais)} por mês, então isso cobre <b>${T.mesesReserva.toFixed(1)} meses</b>.`;
+    html+=`<div class="conta">Contas obrigatórias  ${_brl(T.essenciais)} por mês\nAlvo de 6 meses      ${_brl(alvo)}\nDisponível rápido    ${_brl(T.liquidez)}\n${T.liquidez<alvo?`Falta                ${_brl(alvo-T.liquidez)}`:`Acima do alvo em     ${_brl(T.liquidez-alvo)}`}</div>`;
+    if(T.liquidez<alvo&&T.sobra>0)html+=`<br>Guardando a sobra deste mês (${R$(T.sobra)}), você chegaria lá em ${Math.ceil((alvo-T.liquidez)/T.sobra)} meses.`;
+    return{html,chips:['quanto eu tenho?','tenho dinheiro parado?']};
+  }
+
+  case 'divida': {
+    if(!DB.dividas.length&&!T.faturaAberta)return{html:'Você não tem nenhuma dívida nem fatura em aberto registrada. Se tiver alguma, dá para cadastrar em <b>Início → Seu dinheiro</b>.',chips:['quanto eu tenho?']};
+    let html='';
+    if(T.faturaAberta>0){
+      html+=`Fatura em aberto: ${D(T.faturaAberta)}. Você tem ${R$(T.liquidez)} de resgate rápido, então ela ${T.liquidez>=T.faturaAberta?'<b>está coberta</b>':'<b>não está coberta</b>'}.`;
+    }
+    if(DB.dividas.length){
+      const ord=[...DB.dividas].sort((a,b)=>b.taxa-a.taxa);
+      html+=`${html?'<br><br>':''}Dívidas somam ${D(T.divida)}. A mais cara é <b>${ord[0].nome}</b>, a ${pc(ord[0].taxa,1)} ao mês — ${pc(Math.pow(1+ord[0].taxa,12)-1)} ao ano.`;
+      html+=grafico(ord.map(d=>({n:d.nome,v:d.saldo})));
+      html+=`<div class="conta">Dívida mais cara  ${pc(ord[0].taxa,1)} ao mês\nMelhor aplicação  ${pc(cdiM,2)} ao mês\nDiferença         ${pc(ord[0].taxa-cdiM,2)} ao mês a favor de quitar\n\nSaldo hoje        ${_brl(ord[0].saldo)}\nSe ficar 12 meses ${_brl(ord[0].saldo*Math.pow(1+ord[0].taxa,12))}</div>`;
+      html+=`<br>Enquanto essa taxa for maior que a do seu investimento, cada real usado para abatê-la rende mais do que qualquer aplicação segura.`;
+    }
+    return{html,chips:['quanto eu tenho?','vale a pena pagar tudo no cartão?']};
+  }
+
+  case 'parado': {
+    if(!T.emConta)return{html:'Você ainda não registrou seus saldos. Sem isso não consigo ver se tem dinheiro parado.',chips:['quanto eu tenho?']};
+    if(T.parado<=0)return{html:`Nada parado: os ${R$(T.emConta)} que você tem em conta estão todos rendendo.`,chips:['quanto eu tenho?']};
+    const colchao=T.essenciais*.3,oc=Math.max(0,T.parado-colchao);
+    let html=`Você tem ${D(T.parado)} em conta sem render. Guardando um colchão de ${R$(colchao)} para o dia a dia, sobram ${D(oc)} ociosos.`;
+    html+=`<div class="conta">Parado           ${_brl(T.parado)}\nColchão do mês   ${_brl(colchao)}\nOcioso           ${_brl(oc)}\nCDI ao mês       ${pc(cdiM,2)}\nDeixa de render  ${_brl(oc*cdiM)} por mês\nEm 12 meses      ${_brl(oc*DB.config.cdi)}</div>`;
+    html+=`<br>Não vou dizer onde colocar — isso é decisão sua e depende de coisas que eu não sei. O que dá para dizer é que qualquer aplicação com resgate imediato já elimina essa perda, e que dívida cara, se houver, rende mais que qualquer aplicação.`;
+    return{html,chips:['e minhas dívidas','minha reserva tá boa?']};
+  }
+
+  case 'credito_plano': {
+    const cartao=DB.cartoes[0];
+    if(!cartao)return{html:'Você ainda não cadastrou um cartão. Sem as datas de fechamento e vencimento não consigo calcular o ganho.',chips:['quanto eu tenho?']};
+    let janela=cartao.vencimento-cartao.fechamento;if(janela<=0)janela+=30;
+    const flut=15+janela,base=T.noCredito||T.saidas;
+    const bruto=base*flut*cdiD,liq=bruto*(1-irDe(365));
+    const cobre=T.liquidez>=T.faturaAberta;
+    let html=`Com fechamento no dia ${cartao.fechamento} e vencimento no ${cartao.vencimento}, o que você compra fica em média <b>${flut} dias</b> rendendo antes de sair da conta.`;
+    html+=`<div class="conta">Gasto no crédito   ${_brl(base)}\nFlutuação média    ${flut} dias\nCDI ao dia         ${(cdiD*100).toFixed(4)}%\nGanho bruto        ${_brl(bruto)} por mês\nMenos IR (17,5%)   ${_brl(liq)} por mês\nEm 12 meses        ${_brl(liq*12)}</div>`;
+    html+=`<br>É dinheiro de graça, mas é troco: ${D(liq)} por mês. O que decide se vale a pena não é o ganho, é a disciplina.`;
+    html+=`<br><br>A conta inverte de sinal na hora que você atrasa ou parcela. Um mês de rotativo a 11% apaga <b>${Math.round(0.11*base/Math.max(liq,1))} meses</b> de flutuação.`;
+    html+=`<br><br>Sua fatura em aberto é de ${R$(T.faturaAberta)} e você tem ${R$(T.liquidez)} disponíveis. ${cobre?'<b>Está coberta</b> — a estratégia está funcionando como deveria.':'<b>Não está coberta</b> — nesse cenário o plano vira risco, não ganho.'}`;
+    return{html,chips:['e minhas dívidas','quanto eu tenho?']};
+  }
+
+  case 'assinaturas': {
+    const rec=DB.recorrentes.filter(r=>r.tipo!=='entrada');
+    const ass=T.categorias.find(c=>c.n==='Assinaturas');
+    if(!rec.length&&!ass)return{html:'Você não tem recorrentes cadastrados nem gastos em Assinaturas. Dá para cadastrar os fixos na aba <b>Plano</b> — aí eu passo a cobrar você deles todo mês.',chips:['onde meu dinheiro tá indo?']};
+    let html='';
+    if(ass)html+=`Em Assinaturas você gastou ${D(ass.gasto)} neste mês.`;
+    if(rec.length){
+      const tot=soma(rec.map(r=>r.valor));
+      html+=`${html?'<br><br>':''}Seus fixos somam ${D(tot)} por mês, ou ${R$(tot*12)} por ano.`;
+      html+=grafico(rec.map(r=>({n:r.nome,v:r.valor})));
+      const i=aoMes(DB.config.cdi);
+      html+=`<div class="conta">Por mês     ${_brl(tot)}\nPor ano     ${_brl(tot*12)}\nEm 5 anos, se rendessem  ${_brl(tot*(Math.pow(1+i,60)-1)/i)}</div>`;
+      html+=`<br>Não é um argumento para cancelar tudo — é só o tamanho real do que se repete sem você pensar.`;
+    }
+    return{html,chips:['onde meu dinheiro tá indo?','tô dentro do plano?']};
+  }
+
+  case 'meta': {
+    if(!DB.metas.length)return{html:'Você ainda não tem metas. Dá para criar na aba <b>Metas</b> — eu calculo quanto precisa guardar por mês, já contando o rendimento.',chips:['quanto sobrou?']};
+    let html='Suas metas:';
+    html+=grafico(DB.metas.map(m=>({n:m.n,v:m.atual})));
+    DB.metas.forEach(m=>{
+      const falta=Math.max(0,m.alvo-m.atual);
+      if(falta<=0){html+=`<br><b>${esc(m.n)}</b>: alcançada.`;return}
+      const ms=Math.max(1,Math.round((new Date(m.prazo)-new Date())/2629800000));
+      const i=aoMes(m.taxa||DB.config.cdi),c=Math.pow(1+i,ms);
+      const pmt=Math.max(0,(m.alvo-m.atual*c)*i/(c-1));
+      html+=`<br><br><b>${esc(m.n)}</b>: ${pc(m.atual/m.alvo)} do caminho. Faltam ${R$(falta)} em ${ms} meses — ${D(pmt)} por mês.`;
+      if(T.sobra>0&&pmt>T.sobra)html+=` Sua sobra atual é de ${R$(T.sobra)}, menor que isso.`;
+    });
+    return{html,chips:['quanto sobrou?','como vou fechar o mês?']};
+  }
+
+  case 'renda': {
+    if(!T.entradas&&!T.beneficioIn)return semDados();
+    let html=`Neste mês entraram ${D(T.entradas)}${T.beneficioIn>0?`, mais ${R$(T.beneficioIn)} de vale refeição`:''}.`;
+    const ent=T.lanc.filter(l=>l.tipo==='entrada');
+    if(ent.length>1)html+=grafico(ent.map(l=>({n:l.cat,v:l.valor})));
+    const med=soma(T.historico.filter(h=>h.entradas>0).map(h=>h.entradas))/Math.max(1,T.historico.filter(h=>h.entradas>0).length);
+    if(med>0)html+=`<br>Sua média dos últimos meses é ${R$(med)}.`;
+    if(T.entradas>0)html+=`<br><br>Do que entrou, ${pc(T.essenciais/T.entradas)} foram para contas obrigatórias, ${pc(T.desejos/T.entradas)} para escolhas suas e ${pc((T.sobra+T.aportes)/T.entradas)} ficaram guardados ou investidos.`;
+    return{html,chips:['onde meu dinheiro tá indo?','quanto sobrou?']};
+  }
+
+  case 'ajuda': default: {
+    const nome=perfil().nome;
+    let html=q.intencao==='ajuda'
+      ?`Oi, ${esc(nome)}. Eu leio o que você registra e mostro a realidade dos seus números — não digo o que comprar nem onde investir.`
+      :`Não entendi bem essa. Mas eu sei responder coisas assim:`;
+    html+=`<br><br><b>Registrar</b> — "gastei 50 no mercado", "recebi 3800 de salário", "investi 500"<br>
+    <b>Entender</b> — "onde meu dinheiro tá indo?", "quanto gastei em restaurantes?"<br>
+    <b>Decidir</b> — "posso gastar 400 num tênis?", "como vou fechar o mês?"<br>
+    <b>Conferir</b> — "quanto eu tenho?", "minha reserva tá boa?", "e minhas dívidas"`;
+    if(LEITURAS.length)html+=`<br><br>De olho nos seus números agora: <b>${LEITURAS[0].t.toLowerCase()}</b>. ${LEITURAS[0].txt}`;
+    return{html,chips:['onde meu dinheiro tá indo?','como vou fechar o mês?','quanto eu tenho?']};
+  }}
+}
+
+/* ═════════ TELAS ═════════ */
+const card=o=>`<div class="card${o.tap?' tap':''}" style="--acc:${o.cor||'var(--azul)'}"${o.tap?` role="button" tabindex="0" data-act="${o.tap}"${o.val!==undefined?` data-val="${esc(o.val)}"`:''}`:''}><div class="in">${o.html}</div></div>`;
+const barra=(v,tot,cor)=>`<div class="bar grande" style="--acc:${cor||'var(--azul)'}"><i class="${v>tot?'over':''}" style="width:${Math.min(100,tot>0?v/tot*100:0)}%"></i></div>`;
+const seletorMes=()=>`<div class="segs" style="--acc:var(--ouro)">
+  <button data-act="mesAnt" aria-label="Mês anterior">‹</button>
+  <button style="flex:3" aria-pressed="true">${nomeMes(mesVisto)}</button>
+  <button data-act="mesProx" aria-label="Próximo mês">›</button></div>`;
+
 const TELAS={};
 
 TELAS.inicio=()=>{
+  if(T.vazio)return `<div class="empty" style="padding-top:50px"><div class="e">◬</div>
+    <p>Nada registrado ainda. Comece pelo que você gastou hoje — ou deixe o Oráculo anotar por você.</p></div>
+    <button class="btn" style="--acc:var(--ouro)" data-act="novoLanc">Registrar um gasto</button>
+    <button class="btn sec" data-act="ir" data-val="oraculo">Conversar com o Oráculo</button>
+    <button class="btn sec" data-act="exemplo">Ver com dados de exemplo</button>`;
   const top=LEITURAS[0];
   return `
-  <div class="hero">
-    <div class="lbl">Seu patrimônio hoje</div>
-    <div class="big">${R$(T.liq)}</div>
-    <div class="sub">Deste total, <b>${R$(T.parado)}</b> estão parados sem render.</div>
-  </div>
+  <div class="hero"><div class="lbl">Patrimônio</div><div class="big">${R$(T.liquido)}</div>
+    <div class="sub">${T.parado>0?`<b style="color:var(--brasa)">${R$(T.parado)}</b> parados sem render`:'Tudo rendendo'}${T.faturaAberta>0?` · fatura de ${R$(T.faturaAberta)}`:''}</div></div>
 
-  <div class="first">
-    <div class="in">
-      <div class="kicker"><span class="dot"></span>Comece por aqui</div>
-      <h3>${top.t}</h3>
-      <p>${top.plain}</p>
-      <button class="btn" style="--acc:var(--ouro)" data-act="irOraculo" data-val="${top.id}">${top.acao}</button>
-    </div>
-  </div>
+  ${top?card({cor:'var(--ouro)',tap:'perguntar',val:top.id,html:`
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <span style="width:12px;height:12px;border-radius:50%;flex:none;margin-top:6px;background:${top.sev==='urgente'?'var(--brasa)':top.sev==='atencao'?'var(--ambar)':'var(--verde)'}"></span>
+      <div style="flex:1"><div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ouro);margin-bottom:6px">O Oráculo notou</div>
+        <h3 style="margin:0;font-size:17px;font-weight:500">${top.t}</h3>
+        <p style="margin:8px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink-2)">${top.txt}</p></div>
+      <span class="ex" style="font-size:22px;color:var(--ink-3)">›</span></div>`}):''}
 
-  <div class="sec">
-    <div class="sec-h"><h2>Onde está seu dinheiro</h2></div>
-    ${card({cor:'var(--ouro)',html:`
-      <div class="ringbox">
-        <div class="ring">${anel()}<div class="core"><b>${pc(1-T.parado/T.bruto,0)}</b><span>está rendendo</span></div></div>
-        <div class="legend">${ANEL.map(a=>`
-          <div class="lg"><i style="background:${a.cor}"></i><span class="n">${a.n}</span>
-          <span class="v">${R$(a.v)}</span><span class="p">${pc(a.v/T.bruto,0)}</span></div>`).join('')}
-        </div>
-      </div>`})}
-  </div>
+  ${T.pendentes.length?card({cor:'var(--ambar)',html:`
+    <div class="chead"><span class="sg">↻</span><span class="nm">${T.pendentes.length} fixo(s) para lançar</span></div>
+    <div style="font-size:14.5px;color:var(--ink-2);line-height:1.5">${esc(T.pendentes.slice(0,3).map(r=>r.nome).join(', '))}${T.pendentes.length>3?'...':''}</div>
+    <button class="btn sm" style="--acc:var(--ambar)" data-act="lancarFixos">Lançar todos de uma vez</button>`}):''}
 
   <div class="sec">
-    <div class="sec-h"><h2>Seus grupos</h2></div>
-    ${card({cor:'var(--azul)',tap:'ir',val:'contas',html:`
-      <div class="chead"><span class="sg">ᚠ</span><span class="nm">Contas do banco</span><span class="ex">›</span></div>
-      <div class="val-lg">${R$(T.contas)}</div>
-      <div style="font-size:14px;color:var(--ink-3);margin-top:6px">${CONTAS.length} contas · ${R$(T.parado)} sem render</div>`})}
-    ${card({cor:'var(--ambar)',tap:'ir',val:'contas',html:`
-      <div class="chead"><span class="sg">ᛒ</span><span class="nm">Guardado em caixinhas</span><span class="ex">›</span></div>
-      <div class="val-lg">${R$(T.caix)}</div>
-      <div style="font-size:14px;color:var(--ink-3);margin-top:6px">${CAIXINHAS.length} caixinhas · rendendo 100% a 120% do CDI</div>`})}
-    ${card({cor:'var(--verde)',tap:'ir',val:'investido',html:`
-      <div class="chead"><span class="sg">ᛚ</span><span class="nm">Investido</span><span class="ex">›</span></div>
-      <div class="val-lg">${R$(T.inv)}</div>
-      <div style="font-size:14px;color:var(--ink-3);margin-top:6px">${ACERVO.length} tipos de investimento</div>`})}
-    ${card({cor:'var(--brasa)',tap:'ir',val:'contas',html:`
-      <div class="chead"><span class="sg">ᚲ</span><span class="nm">Dívidas</span><span class="ex">›</span></div>
-      <div class="val-lg" style="color:#F0A08C">− ${R$(T.div)}</div>
-      <div style="font-size:14px;color:var(--ink-3);margin-top:6px">A mais cara cobra 11,2% ao mês</div>`})}
-  </div>
-
-  <div class="sec">
-    <div class="sec-h"><h2>Seu mês</h2><span class="cnt">Agosto</span></div>
+    <div class="sec-h"><h2>${nomeMes(T.mes)}</h2><span class="cnt">dia ${T.diaHoje} de ${T.diasMes}</span></div>
     ${card({cor:'var(--azul)',html:`
-      ${[['Entrou',RENDA,'#5FBB80'],['Saiu',T.gastos,'#E0705A'],['Sobrou',T.sobra,'#5FA3CC']].map(([n,v,c])=>`
-        <div style="margin-bottom:16px">
+      ${[['Entrou',T.entradas,'var(--verde)'],['Saiu',T.saidas,'var(--brasa)'],['Investido',T.aportes,'var(--violeta)'],['Sobrou',T.sobra,'var(--azul)']]
+        .map(([n,v,c])=>`<div style="margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;align-items:baseline">
             <span style="font-size:15px;color:var(--ink-2)">${n}</span>
             <span class="mono" style="font-size:17px;color:${c}">${R$(v)}</span></div>
-          <div class="bar" style="--acc:${c}"><i style="width:${Math.min(100,v/RENDA*100)}%"></i></div>
-        </div>`).join('')}
-      <div style="font-size:14px;color:var(--ink-3);margin-top:4px">Você guardou ${pc(T.sobra/RENDA,0)} do que ganhou este mês.</div>`})}
-    ${card({cor:'var(--ambar)',html:`
-      <div class="chead"><span class="sg">ᛉ</span><span class="nm">Maiores gastos</span></div>
-      ${[...GASTOS].sort((a,b)=>b.v-a.v).slice(0,5).map(g=>`
-        <div class="row"><div class="tx"><b>${g.cat}</b><span>${g.ess?'Conta obrigatória':'Escolha sua'}</span></div>
-        <div class="rt"><b>${R$(g.v)}</b>${g.v>g.m3*1.15?`<span class="pill no">+${pc((g.v-g.m3)/g.m3,0)} vs média</span>`:''}</div></div>`).join('')}`})}
-  </div>
-
-  <p class="note">Selic ${pc(MERCADO.selic)} · CDI ${pc(MERCADO.cdi)} · Inflação 12 meses ${pc(MERCADO.ipca)} — atualizado em ${MERCADO.ref}.</p>`};
-
-TELAS.contas=()=>`
-  <div class="sec" style="margin-top:16px">
-    <div class="sec-h"><h2>Contas do banco</h2><span class="cnt">${R$(T.contas)}</span></div>
-    ${card({cor:'var(--azul)',html:CONTAS.map(c=>`
-      <div class="row"><span class="ic">${c.ic}</span>
-        <div class="tx"><b>${c.n}</b><span>${c.sub}</span></div>
-        <div class="rt"><b>${R$(c.v)}</b><span class="pill ${c.rende?'ok':'no'}">${c.rende?c.taxa:'não rende'}</span></div></div>`).join('')})}
-    ${T.parado>0?card({cor:'var(--ouro)',html:`
-      <div style="font-size:15px;line-height:1.55;color:var(--ink-2)">
-        <b style="color:var(--ink)">${R$(T.parado)} não estão rendendo.</b> Em um ano, isso deixa de virar cerca de ${R$(T.parado*MERCADO.cdi*.825)} — já descontado o imposto.</div>
-      <button class="btn" style="--acc:var(--ouro)" data-act="irOraculo" data-val="parado">Ver onde posso colocar</button>`}):''}
+          ${barra(Math.abs(v),Math.max(T.entradas,T.saidas)||1,c)}</div>`).join('')}
+      ${T.beneficio>0?`<div style="font-size:14px;color:var(--ink-3)">Vale refeição disponível: ${R$(T.beneficio)}</div>`:''}
+      ${T.planoTotal>0?`<div style="font-size:14px;color:var(--ink-3);margin-top:4px">Plano de ${R$(T.planoTotal)} · ${T.restanteOrc>=0?`restam ${R$(T.restanteOrc)}`:`<b style="color:var(--brasa)">${R$(-T.restanteOrc)} acima</b>`}</div>`:''}`})}
   </div>
 
   <div class="sec">
-    <div class="sec-h"><h2>Caixinhas</h2><span class="cnt">${R$(T.caix)}</span></div>
-    ${card({cor:'var(--ambar)',html:CAIXINHAS.map(c=>`
-      <div class="row"><span class="ic">ᛝ</span>
-        <div class="tx"><b>${c.n}</b><span>${c.meta?'Ligada à meta: '+c.meta:'Sem meta ligada'}</span></div>
-        <div class="rt"><b>${R$(c.v)}</b><span class="pill ok">${c.taxa}% do CDI</span></div></div>`).join('')})}
-    ${card({cor:'var(--ambar)',html:`
-      <div style="font-size:15px;line-height:1.55;color:var(--ink-2)">
-        A <b style="color:var(--ink)">Caixinha Turbo</b> rende mais, mas só até R$ 5.000 e enquanto você movimentar a conta todo mês. O que passar disso volta a render 100% do CDI. O app avisa quando isso acontecer.</div>`})}
+    <div class="sec-h"><h2>Para onde foi</h2><button data-act="ir" data-val="orcamento">Ver plano</button></div>
+    ${card({cor:'var(--ambar)',html:T.categorias.length?T.categorias.slice(0,6).map(c=>`
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <span style="font-size:15px">${c.g} ${c.n}</span>
+          <span class="mono" style="font-size:15px;color:${c.plano&&c.gasto>c.plano?'#F0A08C':'var(--ink)'}">${R$(c.gasto)}</span></div>
+        ${barra(c.gasto,c.plano||T.categorias[0].gasto,c.e?'var(--azul)':'var(--ambar)')}
+        ${c.plano?`<div style="font-size:12.5px;color:var(--ink-3);margin-top:5px">de ${R$(c.plano)} planejados</div>`:''}
+      </div>`).join(''):'<div class="empty"><p>Nenhum gasto neste mês.</p></div>'})}
   </div>
 
   <div class="sec">
-    <div class="sec-h"><h2>Dívidas</h2><span class="cnt" style="color:#F0A08C">${R$(T.div)}</span></div>
-    ${card({cor:'var(--brasa)',html:DIVIDAS.map(d=>`
-      <div class="row"><span class="ic">ᚾ</span>
-        <div class="tx"><b>${d.n}</b><span>${d.sub}</span></div>
-        <div class="rt"><b>${R$(d.v)}</b><span class="pill ${d.taxa>.05?'no':'nt'}">${pc(d.taxa)} ao mês</span></div></div>`).join('')})}
+    <div class="sec-h"><h2>Seu dinheiro</h2><button data-act="patrimonio">Editar</button></div>
+    ${card({cor:'var(--verde)',tap:'patrimonio',html:
+      [['Em conta e caixinhas',T.emConta],['Investido',T.invest],['Dívidas',-T.divida],['Fatura em aberto',-T.faturaAberta]]
+      .filter(([,v])=>v!==0).map(([n,v])=>`<div class="row"><div class="tx"><b>${n}</b></div>
+        <div class="rt"><b style="color:${v<0?'#F0A08C':'var(--ink)'}">${v<0?'− ':''}${R$(Math.abs(v))}</b></div></div>`).join('')
+      ||'<div style="font-size:14.5px;color:var(--ink-3)">Toque para informar seus saldos.</div>'})}
   </div>`;
+};
 
-TELAS.investido=()=>`
-  <div class="hero">
-    <div class="lbl">Total investido</div>
-    <div class="big">${R$(T.inv)}</div>
-    <div class="sub">Separado em ${ACERVO.length} tipos. Toque em um para ver o que tem dentro.</div>
+TELAS.extrato=()=>{
+  const lanc=DB.lancamentos.filter(l=>mesDe(l.data)===mesVisto).sort((a,b)=>b.data.localeCompare(a.data)||b.id.localeCompare(a.id));
+  const porDia=new Map();
+  lanc.forEach(l=>{if(!porDia.has(l.data))porDia.set(l.data,[]);porDia.get(l.data).push(l)});
+  return `${seletorMes()}
+  <div class="sec" style="margin-top:14px">${card({cor:'var(--azul)',html:`
+    <div style="display:flex;gap:14px;text-align:center">
+      ${[['Entrou',T.entradas,'var(--verde)'],['Saiu',T.saidas,'var(--brasa)'],['Sobrou',T.sobra,'var(--azul)']]
+        .map(([n,v,c])=>`<div style="flex:1"><div style="font-size:13px;color:var(--ink-3)">${n}</div>
+          <div class="mono" style="font-size:17px;color:${c};margin-top:4px">${R$(v)}</div></div>`).join('')}
+    </div>`})}</div>
+  ${lanc.length?[...porDia.entries()].map(([dia,ls])=>`
+    <div class="dia">${new Date(dia+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'short'})}</div>
+    ${card({cor:'var(--ink-3)',html:ls.map(l=>{
+      const c=catDe(l.cat),ent=l.tipo==='entrada',ap=l.tipo==='aporte';
+      return `<div class="row click" data-act="editarLanc" data-val="${l.id}" style="--acc:${ent?'var(--verde)':ap?'var(--violeta)':'var(--ambar)'}">
+        <span class="ic">${ent?'↓':ap?'◈':c.g}</span>
+        <div class="tx"><b>${esc(l.desc||l.cat)}</b><span>${esc(l.cat)}</span></div>
+        <div class="rt"><b style="color:${ent?'#8FD9AC':ap?'#C4AEE8':'var(--ink)'}">${ent?'+':ap?'':'−'} ${R$(l.valor)}</b>
+          ${l.meio==='credito'?'<span class="pill cr">cartão</span>':l.meio==='beneficio'?'<span class="pill bf">VR</span>':''}</div></div>`}).join('')})}
+  `).join(''):`<div class="empty"><div class="e">◇</div><p>Nenhum lançamento em ${nomeMes(mesVisto)}.</p></div>`}
+  <button class="btn" style="--acc:var(--ouro)" data-act="novoLanc">Registrar lançamento</button>`;
+};
+
+TELAS.orcamento=()=>`
+  ${seletorMes()}
+  <div class="sec" style="margin-top:14px">
+    <div class="sec-h"><h2>Plano do mês</h2><button data-act="editarOrcamento">Ajustar</button></div>
+    ${card({cor:T.saidas>T.planoTotal&&T.planoTotal?'var(--brasa)':'var(--verde)',html:`
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:15px;color:var(--ink-2)">Gasto de ${R$(T.planoTotal)}</span>
+        <span class="mono val-md">${R$(T.saidas)}</span></div>
+      ${barra(T.saidas,T.planoTotal||1,T.saidas>T.planoTotal?'var(--brasa)':'var(--verde)')}
+      <div style="font-size:14px;color:var(--ink-3);margin-top:10px">
+        ${!T.planoTotal?'Toque em Ajustar para definir seus limites.'
+          :T.restanteOrc<0?`Você passou ${R$(-T.restanteOrc)} do plano.`
+          :`Restam ${R$(T.restanteOrc)}${T.ehAtual&&T.diasRestantes?` — ${R$(T.porDia)} por dia nos ${T.diasRestantes} dias que faltam.`:'.'}`}</div>`})}
   </div>
-  <div class="sec" style="margin-top:18px">
-    ${T.classes.map((c,k)=>{const ab=aberto.has('cl'+k);return `
-      <div class="card" style="--acc:${c.cor}"><div class="in">
-        <div class="chead" role="button" tabindex="0" data-act="toggle" data-val="cl${k}" aria-expanded="${ab}" style="margin-bottom:10px;cursor:pointer">
-          <span class="sg">${c.sg}</span>
-          <span class="nm">${c.c}<span style="display:block;font-size:13px;color:var(--ink-3);margin-top:2px">Risco ${c.risco} · ${c.itens.length} ${c.itens.length>1?'aplicações':'aplicação'}</span></span>
-          <span class="ex" style="transform:rotate(${ab?'90':'0'}deg);transition:.2s">›</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
-          <span class="val-md">${R$(c.v)}</span><span style="font-size:14px;color:var(--ink-3)">${pc(c.v/T.inv,0)} do total</span></div>
-        <div class="bar"><i style="width:${c.v/T.inv*100}%"></i></div>
-        ${ab?`<div style="margin-top:8px">${c.itens.map(i=>`
-          <div class="row"><div class="tx"><b>${i.n}</b><span>${i.em} · ${i.liq}</span></div>
-          <div class="rt"><b>${R$(i.v)}</b><span class="pill nt">${i.idx}</span></div></div>`).join('')}</div>`:''}
-      </div></div>`}).join('')}
+
+  <div class="sec">
+    <div class="sec-h"><h2>Por categoria</h2></div>
+    ${T.categorias.length?T.categorias.map(c=>{
+      const est=c.plano>0&&c.gasto>c.plano,sem=!c.plano;
+      return card({cor:est?'var(--brasa)':c.e?'var(--azul)':'var(--ambar)',tap:'editarOrcamento',html:`
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <span style="font-size:16px">${c.g} ${c.n}${c.e?' <span style="font-size:12px;color:var(--ink-3)">obrigatória</span>':''}</span>
+          <span class="mono" style="font-size:16px;color:${est?'#F0A08C':'var(--ink)'}">${R$(c.gasto)}</span></div>
+        ${barra(c.gasto,c.plano||c.gasto||1,est?'var(--brasa)':c.e?'var(--azul)':'var(--ambar)')}
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--ink-3);margin-top:8px">
+          <span>${sem?'sem limite':`limite de ${R$(c.plano)}`}</span>
+          <span>${sem?'toque para definir':est?`${R$(c.gasto-c.plano)} acima`:`${R$(c.plano-c.gasto)} disponível`}</span></div>`})}).join('')
+      :'<div class="empty"><p>Defina limites e o app acompanha para você.</p></div>'}
   </div>
-  <p class="note">Todo investimento entra em um destes grupos. Se o app importar um produto que não encaixa em nenhum, ele pergunta a você onde colocar — nunca joga em uma gaveta de "outros".</p>`;
+
+  <div class="sec">
+    <div class="sec-h"><h2>Fixos do mês</h2><button data-act="novoRecorrente">+ Novo</button></div>
+    ${DB.recorrentes.length?card({cor:'var(--violeta)',html:DB.recorrentes.map(r=>{
+      const lancado=DB.lancamentos.some(l=>l.recId===r.id&&mesDe(l.data)===mesVisto);
+      return `<div class="row click" data-act="editarRecorrente" data-val="${r.id}"
+        style="--acc:${r.tipo==='entrada'?'var(--verde)':'var(--violeta)'}">
+        <span class="ic">${r.tipo==='entrada'?'↓':'↻'}</span>
+        <div class="tx"><b>${esc(r.nome)}</b><span>${esc(r.cat)} · todo dia ${r.dia}</span></div>
+        <div class="rt"><b>${R$(r.valor)}</b>
+          <span class="pill ${lancado?'ok':'nt'}">${lancado?'lançado':'pendente'}</span></div></div>`}).join('')})
+      :card({cor:'var(--violeta)',html:`<div style="font-size:14.5px;color:var(--ink-2);line-height:1.55">
+        Cadastre o que se repete todo mês — salário, vale refeição, aluguel, streamings. O app avisa quando faltar lançar e você resolve tudo num toque.</div>`})}
+    ${T.pendentes.length?`<button class="btn" style="--acc:var(--violeta)" data-act="lancarFixos">Lançar os ${T.pendentes.length} pendentes</button>`:''}
+    <button class="btn sec" data-act="novoRecorrente">Cadastrar um fixo</button>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Quanto quero investir</h2></div>
+    ${card({cor:'var(--violeta)',tap:'editarAporte',html:`
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:15px;color:var(--ink-2)">Meta de ${R$(DB.aporteMeta)} por mês</span>
+        <span class="mono val-md">${R$(T.aportes)}</span></div>
+      ${barra(T.aportes,DB.aporteMeta||1,'var(--violeta)')}
+      <div style="font-size:14px;color:var(--ink-3);margin-top:10px">
+        ${!DB.aporteMeta?'Toque para definir.':T.aportes>=DB.aporteMeta?'Cumprido neste mês.':`Faltam ${R$(DB.aporteMeta-T.aportes)}.`}</div>`})}
+  </div>`;
 
 TELAS.metas=()=>`
   <div class="sec" style="margin-top:16px">
-    <div class="sec-h"><h2>Suas metas</h2><span class="cnt">${METAS.length}</span></div>
-    ${METAS.length?METAS.map((m,k)=>{
+    <div class="sec-h"><h2>Suas metas</h2><span class="cnt">${DB.metas.length}</span></div>
+    ${DB.metas.length?DB.metas.map(m=>{
       const p=Math.min(1,m.atual/m.alvo),pronto=p>=1;
-      let linha,destaque='';
-      if(pronto){linha='Meta alcançada 🎉'}
-      else{const ms=mesesAte(m.prazo),i=aoMes(m.taxa),c=Math.pow(1+i,ms);
+      let linha,extra='';
+      if(pronto)linha='Meta alcançada';
+      else{
+        const ms=Math.max(1,Math.round((new Date(m.prazo)-new Date())/2629800000));
+        const i=aoMes(m.taxa||DB.config.cdi),c=Math.pow(1+i,ms);
         const pmt=Math.max(0,(m.alvo-m.atual*c)*i/(c-1));
         linha=`Faltam ${R$(m.alvo-m.atual)} em ${ms} ${ms>1?'meses':'mês'}`;
-        destaque=`<div class="preview" style="background:rgba(163,136,224,.1)"><div class="l">Guardando por mês</div><div class="v">${R$(pmt)}</div><div class="n">Já contando o rendimento em ${m.onde}</div></div>`}
+        extra=`<div class="preview" style="--acc:var(--violeta)"><div class="l">Guardando por mês</div>
+          <div class="v">${R$(pmt)}</div><div class="n">Já contando o rendimento</div></div>`;
+      }
       return card({cor:'var(--violeta)',html:`
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
           <b style="font-size:17px;font-weight:500">${esc(m.n)}</b>
-          <span class="mono" style="font-size:16px;color:${pronto?'#8FD9AC':'var(--violeta)'}">${pc(p,0)}</span></div>
-        <div class="bar" style="--acc:${pronto?'var(--verde)':'var(--violeta)'}"><i style="width:${p*100}%"></i></div>
+          <span class="mono" style="font-size:16px;color:${pronto?'#8FD9AC':'var(--violeta)'}">${pc(p)}</span></div>
+        ${barra(m.atual,m.alvo,pronto?'var(--verde)':'var(--violeta)')}
         <div style="display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-size:14px;color:var(--ink-3)">
           <span>${linha}</span><span class="mono">${R$(m.atual)} / ${R$(m.alvo)}</span></div>
-        ${destaque}
-        <button class="btn sec sm" data-act="delMeta" data-val="${k}">Remover meta</button>`})}).join('')
-    :`<div class="empty"><div class="e">◇</div><p>Nenhuma meta ainda. Comece com algo concreto: uma viagem, uma troca de celular, uma reserva.</p></div>`}
-    <button class="btn" style="--acc:var(--violeta)" data-act="novaMeta">+ Criar nova meta</button>
+        ${extra}
+        <div style="display:flex;gap:8px">
+          <button class="btn sec sm" style="flex:1" data-act="guardarMeta" data-val="${m.id}">Guardar valor</button>
+          <button class="btn sec sm" style="flex:1" data-act="delMeta" data-val="${m.id}">Remover</button></div>`});
+    }).join(''):`<div class="empty"><div class="e">◇</div><p>Nenhuma meta ainda. Comece com algo concreto.</p></div>`}
+    <button class="btn" style="--acc:var(--violeta)" data-act="novaMeta">Criar nova meta</button>
   </div>`;
 
-TELAS.oraculo=()=>`
-  ${card({cor:'var(--ouro)',html:`
-    <div style="display:flex;gap:13px;align-items:flex-start">
-      <span style="font-size:26px;color:var(--ouro);line-height:1">◬</span>
-      <div style="font-size:15px;line-height:1.55;color:var(--ink-2)">
-        Eu leio os seus números e mostro <b style="color:var(--ouro)">possibilidades</b>. Toda leitura mostra a conta que a gerou, se você quiser conferir. Eu não digo o que comprar — a escolha é sua.</div>
-    </div>`})}
-
-  <div class="chips" style="margin:16px 0 4px">
-    ${[['tudo','Tudo'],['urgente','Precisa de ação'],['saudavel','Está bem']].map(([v,l])=>`
-      <button class="chip" style="--acc:var(--ouro)" data-act="filtro" data-val="${v}" aria-pressed="${filtro===v}">${l}</button>`).join('')}
-  </div>
-
-  <div class="sec" style="margin-top:12px">
-    ${LEITURAS.filter(l=>filtro==='tudo'||(filtro==='urgente'?['urgente','atencao'].includes(l.sev):l.sev==='saudavel')).map(l=>{
-      const ab=aberto.has(l.id);return `
-      <div class="card ins" id="ins-${l.id}"><div class="in">
-        <div class="top"><span class="sev sv-${l.sev}"></span><div style="flex:1"><h3>${l.t}</h3><p class="plain">${l.plain}</p></div></div>
-        <button class="more" data-act="toggle" data-val="${l.id}" aria-expanded="${ab}">
-          <span>${ab?'Esconder detalhes':l.acao}</span><span style="font-size:19px;transform:rotate(${ab?'90':'0'}deg);display:inline-block;transition:.2s">›</span></button>
-        <div class="detail" data-open="${ab?1:0}">
-          <div class="math">${l.math}</div>
-          ${l.opts?`<div class="opts"><div class="t">Possibilidades — nenhuma é recomendação:</div><ul style="margin:0;padding:0">${l.opts.map(o=>`<li>${o}</li>`).join('')}</ul></div>`:''}
-          <div class="concept">◇ ${l.con}</div>
-        </div>
-      </div></div>`}).join('')}
-  </div>
-
-  <div class="sec">
-    <div class="sec-h"><h2>Simular</h2></div>
-    ${card({cor:'var(--ambar)',html:`
-      <div style="font-size:15px;color:var(--ink-2);line-height:1.55">Escolha um valor e veja quanto ele renderia em 12 meses em cada lugar. Os números já vêm com o imposto descontado.</div>
-      <div class="chips">${[1000,2500,Math.round(T.parado)].map(v=>`<button class="chip" style="--acc:var(--ambar)" data-act="simchip" data-val="${v}" aria-pressed="${simVal===v}">${_brl(v).replace(',00','')}</button>`).join('')}</div>
-      <div style="margin-top:18px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
-          <span style="font-size:14px;color:var(--ink-3)">Valor</span>
-          <span class="mono" style="font-size:22px">${_brl(simVal)}</span></div>
-        <input type="range" id="sl" min="500" max="${Math.round(T.parado)}" step="100" value="${simVal}" aria-label="Valor a simular"
-          style="width:100%;margin-top:12px;height:44px;accent-color:#DCA84B;background:transparent">
-      </div>
-      <div id="simOut" style="margin-top:6px"></div>`})}
-  </div>
-
-  <p class="note">O Grimório não é consultoria de investimentos. No Brasil, recomendar produtos financeiros de forma individualizada é atividade regulada pela CVM e exige registro. Aqui você vê cálculos sobre os seus próprios números e cenários lado a lado — a decisão e o risco são seus.</p>`;
-
-function simular(){
-  const el=document.getElementById('simOut');if(!el)return;
-  const linhas=DESTINOS.map(d=>{
-    const dentro=d.teto?Math.min(simVal,d.teto):simVal, fora=d.teto?Math.max(0,simVal-d.teto):0;
-    const g=(dentro*d.aa*(d.ir?1-irDe(365):1))+(fora*.139*(1-irDe(365)));
-    return {n:d.n,ob:d.ob,g};
-  }).sort((a,b)=>b.g-a.g);
-  const max=linhas[0].g||1;
-  el.innerHTML=linhas.map((l,k)=>`
-    <div style="margin-top:18px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-        <span style="font-size:15px;color:var(--ink)">${l.n}${k===0?' <span class="pill ok" style="margin-left:4px">melhor</span>':''}</span>
-        <span class="mono" style="font-size:16px;color:${l.g>0?'#8FD9AC':'var(--ink-3)'}">+${_brl(l.g)}</span></div>
-      <div class="bar" style="--acc:${k===0?'var(--verde)':'var(--ambar)'}"><i style="width:${Math.max(2,l.g/max*100)}%"></i></div>
-      <div style="font-size:13px;color:var(--ink-3);margin-top:7px">${l.ob}</div>
-    </div>`).join('');
-}
-
-/* ═══════════ ESTADO E NAVEGAÇÃO ═══════════ */
-const NAV=[
-  {id:'inicio',   g:'ᛝ',t:'Início',   tit:'Início'},
-  {id:'contas',   g:'ᚠ',t:'Contas',   tit:'Contas'},
-  {id:'investido',g:'ᛚ',t:'Investido',tit:'Investido'},
-  {id:'metas',    g:'ᛞ',t:'Metas',    tit:'Metas'},
-  {id:'oraculo',  g:'◬',t:'Oráculo',  tit:'Oráculo'},
-];
-let tela='inicio', aberto=new Set(), filtro='tudo', simVal=2500;
-const rolagem={};                       // guarda onde cada aba parou
-const $view=()=>document.getElementById('view');
-
-function render(anim){
-  const t=NAV.find(x=>x.id===tela);
-  document.getElementById('hTt').textContent=t.tit;
-  const h=new Date().getHours();
-  document.getElementById('hHi').textContent=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
-  const m=$view();
-  m.innerHTML=TELAS[tela]();
-  if(anim){m.removeAttribute('data-anim');void m.offsetWidth;m.dataset.anim='1'}
-  document.getElementById('nav').innerHTML=NAV.map(x=>`
-    <button data-nav="${x.id}" aria-current="${x.id===tela?'page':'false'}">
-      <span class="g" aria-hidden="true">${x.g}</span><span class="t">${x.t}</span></button>`).join('');
-  if(tela==='oraculo'){simular();
-    const sl=document.getElementById('sl');
-    if(sl)sl.addEventListener('input',e=>{simVal=+e.target.value;
-      e.target.previousElementSibling.querySelector('.mono').textContent=_brl(simVal);simular()});}
-}
-function ir(id){
-  if(id===tela){$view().scrollTo({top:0,behavior:'smooth'});return}   // tocar na aba atual volta ao topo
-  rolagem[tela]=$view().scrollTop;
-  tela=id;render(true);
-  $view().scrollTop=rolagem[id]||0;
-  document.querySelector('header').dataset.scrolled=($view().scrollTop>4)?'1':'0';
-}
-
-/* ═══════════ AÇÕES ═══════════ */
-const ACOES={
-  ir:v=>ir(v),
-  toggle:v=>{aberto.has(v)?aberto.delete(v):aberto.add(v);const y=document.getElementById('view').scrollTop;render();document.getElementById('view').scrollTop=y},
-  filtro:v=>{filtro=v;render()},
-  simchip:v=>{simVal=+v;render()},
-  irOraculo:v=>{tela='oraculo';aberto=new Set([v]);filtro='tudo';render();
-    setTimeout(()=>document.getElementById('ins-'+v)?.scrollIntoView({behavior:'smooth',block:'center'}),60)},
-  delMeta:v=>{const m=METAS[+v];
-    abrirFolha('Remover meta',`<p style="font-size:16px;line-height:1.55;color:var(--ink-2)">Tem certeza que quer remover <b style="color:var(--ink)">${esc(m.n)}</b>? O histórico dessa meta será perdido.</p>
-    <button class="btn dgr" data-act="confDel" data-val="${v}">Sim, remover</button>
-    <button class="btn sec" data-act="fechar">Cancelar</button>`)},
-  confDel:v=>{const m=METAS.splice(+v,1)[0];fecharFolha();render();aviso(`"${m.n}" foi removida`)},
-  novaMeta:()=>abrirFolha('Nova meta',formMeta()),
-  prazo:(v,el)=>{el.parentNode.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
-    el.setAttribute('aria-pressed','true');document.getElementById('fMeses').value=v;
-    document.getElementById('fData').value='';previewMeta()},
-  salvarMeta:()=>{
-    const n=document.getElementById('fNome').value.trim();
-    const alvo=+document.getElementById('fAlvo').dataset.raw||0;
-    const atual=+document.getElementById('fAtual').dataset.raw||0;
-    const meses=mesesForm();
-    const sel=document.getElementById('fOnde');
-    if(!n){aviso('Dê um nome para a meta');return}
-    if(alvo<=0){aviso('Informe quanto custa');return}
-    METAS.push({n,alvo,atual,prazo:new Date(Date.now()+meses*2629800000).toISOString().slice(0,10),
-      onde:sel.options[sel.selectedIndex].text,taxa:+sel.value});
-    fecharFolha();tela='metas';render();aviso('Meta criada');
-  },
-  fechar:()=>fecharFolha(),
+TELAS.oraculo=()=>{
+  if(!DB.chat.length){
+    const abertura=T.vazio
+      ?`Oi, ${esc(perfil().nome)}. Eu sou o Oráculo. Você me conta o que gastou e eu mostro para onde seu dinheiro está indo — sem palpite sobre onde investir, só a realidade dos seus números.<br><br>Pode começar dizendo algo como <b>"gastei 40 no mercado"</b>.`
+      :`Oi, ${esc(perfil().nome)}. Já dei uma olhada nos seus números.${LEITURAS.length?`<br><br><b>${LEITURAS[0].t}</b> — ${LEITURAS[0].txt}`:''}<br><br>Pergunte o que quiser, ou registre um gasto falando normalmente.`;
+    DB.chat.push({de:'or',html:abertura,chips:T.vazio?['gastei 40 no mercado','o que você faz?']:['onde meu dinheiro tá indo?','como vou fechar o mês?','posso gastar 300?']});
+  }
+  return DB.chat.map((m,i)=>`
+    <div class="msg ${m.de}"><div class="bolha">${m.de==='eu'?esc(m.txt):m.html}
+      ${m.desfazer&&i===DB.chat.length-1?`<button class="btn sec sm" data-act="desfazer" data-val="${m.desfazer}">Desfazer</button>`:''}
+    </div></div>`).join('')+`<div id="fimChat" style="height:6px"></div>`;
 };
 
-/* ═══════════ FORMULÁRIO DE META ═══════════ */
-function formMeta(){return `
-  <div class="field"><label for="fNome">O que você quer conquistar?</label>
-    <div class="inp"><input id="fNome" placeholder="Ex: viagem para a praia" autocomplete="off"></div>
-    <div class="hint">Nomes concretos funcionam melhor que "guardar dinheiro".</div></div>
+/* ═════════ FORMULÁRIOS ═════════ */
+let rascunho={};
+const moneyAttrs=v=>`data-money="1" data-raw="${v||''}" value="${v?v.toLocaleString('pt-BR',{minimumFractionDigits:2}):''}"`;
 
-  <div class="field"><label for="fAlvo">Quanto custa?</label>
-    <div class="inp"><span class="pre">R$</span><input id="fAlvo" class="mono" inputmode="numeric" placeholder="0,00" data-money="1"></div></div>
-
-  <div class="field"><label for="fAtual">Você já tem algum valor guardado?</label>
-    <div class="inp"><span class="pre">R$</span><input id="fAtual" class="mono" inputmode="numeric" placeholder="0,00" data-money="1"></div>
-    <div class="hint">Pode deixar zerado se estiver começando agora.</div></div>
-
-  <div class="field"><label>Para quando?</label>
-    <div class="chips" style="--acc:var(--violeta)">
-      ${[[6,'6 meses'],[12,'1 ano'],[24,'2 anos'],[60,'5 anos']].map(([v,l],k)=>`
-        <button class="chip" data-act="prazo" data-val="${v}" aria-pressed="${k===1}">${l}</button>`).join('')}
-    </div>
-    <input type="hidden" id="fMeses" value="12">
-    <div class="inp" style="margin-top:10px"><span class="pre">ou</span><input type="date" id="fData"></div></div>
-
-  <div class="field"><label for="fOnde">Onde vai guardar?</label>
-    <div class="inp"><select id="fOnde">
-      ${DESTINOS.filter(d=>d.aa>0&&d.aa<.2).map(d=>`<option value="${d.aa}">${d.n}</option>`).join('')}
-    </select><span class="pre">▾</span></div>
-    <div class="hint">O rendimento reduz o quanto você precisa guardar por mês.</div></div>
-
-  <div class="preview" id="prev">
-    <div class="l">Você vai precisar guardar</div>
-    <div class="v" id="prevV">R$ 0,00</div>
-    <div class="n" id="prevN">por mês, até chegar lá</div>
-  </div>
-
-  <button class="btn" style="--acc:var(--violeta)" data-act="salvarMeta">Salvar meta</button>
-  <button class="btn sec" data-act="fechar">Cancelar</button>`}
-
-function mesesForm(){
-  const d=document.getElementById('fData')?.value;
-  if(d){const m=mesesAte(d);return m>0?m:1}
-  return +(document.getElementById('fMeses')?.value||12);
+function formLanc(id){
+  const l=id?DB.lancamentos.find(x=>x.id===id):null;
+  if(!id||rascunho.id!==id)rascunho=l?{...l}:{tipo:'saida',data:hojeISO(),meio:'debito',valor:0,cat:''};
+  const cats=rascunho.tipo==='entrada'?CAT_ENTRADA.map(n=>({n,g:'↓'})):
+             rascunho.tipo==='aporte'?[{n:'Aporte',g:'◈'}]:DB.categorias;
+  return `
+  <div class="segs" style="--acc:${rascunho.tipo==='entrada'?'var(--verde)':rascunho.tipo==='aporte'?'var(--violeta)':'var(--brasa)'}">
+    ${[['saida','Gastei'],['entrada','Recebi'],['aporte','Investi']].map(([v,t])=>
+      `<button data-act="tipoLanc" data-val="${v}" aria-pressed="${rascunho.tipo===v}">${t}</button>`).join('')}</div>
+  <div class="field"><label for="lqVal">Quanto</label>
+    <div class="inp grande" style="--acc:var(--ouro)"><span class="pre">R$</span>
+      <input id="lqVal" inputmode="numeric" placeholder="0,00" data-campo="valor" ${moneyAttrs(rascunho.valor)}></div></div>
+  <div class="field"><label>Categoria</label>
+    <div class="chips" style="--acc:var(--ambar)">${cats.map(c=>
+      `<button class="chip mini" data-act="catLanc" data-val="${esc(c.n)}" aria-pressed="${rascunho.cat===c.n}">${c.g||''} ${c.n}</button>`).join('')}
+      ${rascunho.tipo==='saida'?'<button class="chip mini" data-act="novaCategoria">+ nova</button>':''}</div></div>
+  ${rascunho.tipo==='saida'?`<div class="field"><label>Como pagou</label>
+    <div class="chips" style="--acc:var(--azul)">${[['debito','Débito ou Pix'],['credito','Crédito'],['dinheiro','Dinheiro'],['beneficio','Vale refeição']].map(([v,t])=>
+      `<button class="chip mini" data-act="meioLanc" data-val="${v}" aria-pressed="${rascunho.meio===v}">${t}</button>`).join('')}</div></div>`:''}
+  <div class="field"><label>Quando</label>
+    <div class="chips" style="--acc:var(--verde)">${[[0,'Hoje'],[1,'Ontem'],[2,'Anteontem']].map(([d,t])=>{
+      const dt=new Date();dt.setDate(dt.getDate()-d);const iso=dt.toISOString().slice(0,10);
+      return `<button class="chip mini" data-act="dataLanc" data-val="${iso}" aria-pressed="${rascunho.data===iso}">${t}</button>`}).join('')}</div>
+    <div class="inp" style="margin-top:10px"><span class="pre">ou</span><input type="date" data-campo="data" value="${rascunho.data}"></div></div>
+  <div class="field"><label for="lqDesc">Descrição <span style="color:var(--ink-3);font-weight:400">(opcional)</span></label>
+    <div class="inp"><input id="lqDesc" data-campo="desc" placeholder="mercado do mês" value="${esc(rascunho.desc||'')}"></div></div>
+  <button class="btn" style="--acc:var(--ouro)" data-act="salvarLanc" data-val="${id||''}">${id?'Salvar':'Registrar'}</button>
+  ${id?`<button class="btn dgr" data-act="delLanc" data-val="${id}">Excluir</button>`:''}
+  <button class="btn sec" data-act="fechar">Cancelar</button>`;
 }
+
+function formRecorrente(id){
+  const r=id?DB.recorrentes.find(x=>x.id===id):null;
+  if(!id||rascunho.id!==id)rascunho=r?{...r}:{tipo:'saida',valor:0,cat:'',nome:'',dia:5,meio:'debito'};
+  const cats=rascunho.tipo==='entrada'?CAT_ENTRADA.map(n=>({n,g:'↓'})):DB.categorias;
+  return `
+  <p style="font-size:14.5px;color:var(--ink-2);line-height:1.55;margin:0">
+    O que se repete todo mês com o mesmo valor — salário, vale refeição, aluguel, streaming.</p>
+  <div class="segs" style="--acc:${rascunho.tipo==='entrada'?'var(--verde)':'var(--brasa)'}">
+    ${[['saida','Sai todo mês'],['entrada','Entra todo mês']].map(([v,t])=>
+      `<button data-act="tipoRec" data-val="${v}" aria-pressed="${rascunho.tipo===v}">${t}</button>`).join('')}</div>
+  <div class="field"><label for="rcNome">Nome</label>
+    <div class="inp"><input id="rcNome" data-campo="nome" placeholder="${rascunho.tipo==='entrada'?'Salário':'Netflix'}" value="${esc(rascunho.nome||'')}"></div></div>
+  <div class="field"><label for="rcVal">Valor</label>
+    <div class="inp"><span class="pre">R$</span><input id="rcVal" inputmode="numeric" data-campo="valor" ${moneyAttrs(rascunho.valor)} placeholder="0,00"></div></div>
+  <div class="field"><label>Categoria</label>
+    <div class="chips" style="--acc:var(--ambar)">${cats.map(c=>
+      `<button class="chip mini" data-act="catRec" data-val="${esc(c.n)}" aria-pressed="${rascunho.cat===c.n}">${c.g||''} ${c.n}</button>`).join('')}</div></div>
+  <div class="field"><label for="rcDia">Dia do mês</label>
+    <div class="inp"><input id="rcDia" type="number" min="1" max="31" data-campo="dia" value="${rascunho.dia||5}"></div>
+    <div class="hint">Serve só para organizar a data do lançamento.</div></div>
+  ${rascunho.tipo==='saida'?`<div class="field"><label>Como paga</label>
+    <div class="chips" style="--acc:var(--azul)">${[['debito','Débito ou Pix'],['credito','Crédito'],['beneficio','Vale refeição']].map(([v,t])=>
+      `<button class="chip mini" data-act="meioRec" data-val="${v}" aria-pressed="${rascunho.meio===v}">${t}</button>`).join('')}</div></div>`:''}
+  <button class="btn" style="--acc:var(--violeta)" data-act="salvarRecorrente" data-val="${id||''}">${id?'Salvar':'Cadastrar'}</button>
+  ${id?`<button class="btn dgr" data-act="delRecorrente" data-val="${id}">Excluir</button>`:''}
+  <button class="btn sec" data-act="fechar">Cancelar</button>`;
+}
+
+const formOrcamento=()=>`
+  <p style="font-size:15px;line-height:1.6;color:var(--ink-2);margin:0 0 6px">
+    Quanto pretende gastar por mês em cada categoria. Deixe em branco o que não quiser acompanhar.</p>
+  ${DB.categorias.map(c=>`<div class="field" style="margin-top:14px"><label>${c.g} ${c.n}${c.e?' — obrigatória':''}</label>
+    <div class="inp"><span class="pre">R$</span>
+      <input inputmode="numeric" data-orc="${esc(c.n)}" ${moneyAttrs(DB.orcamento[c.n])} placeholder="0,00"></div></div>`).join('')}
+  <div class="preview" style="--acc:var(--ouro);margin-top:20px"><div class="l">Total planejado</div>
+    <div class="v" id="orcTotal">${R$(T.planoTotal)}</div>
+    <div class="n">Sua renda registrada neste mês foi de ${R$(T.entradas)}</div></div>
+  <button class="btn" style="--acc:var(--verde)" data-act="salvarOrcamento">Salvar plano</button>
+  <button class="btn sec" data-act="fechar">Cancelar</button>`;
+
+const formPatrimonio=()=>`
+  <p style="font-size:15px;line-height:1.6;color:var(--ink-2);margin:0 0 10px">
+    Atualize quando quiser. É daqui que sai seu patrimônio e sua reserva.</p>
+  <div class="sec-h" style="margin-top:18px"><h2>Contas e caixinhas</h2></div>
+  ${DB.contas.map(c=>`<div class="row" style="--acc:var(--azul)">
+    <div class="tx"><b>${esc(c.nome)}</b><span>${c.rende?'rendendo':'não rende'}</span></div>
+    <div class="rt" style="width:130px"><div class="inp" style="min-height:44px;padding:0 10px"><span class="pre">R$</span>
+      <input inputmode="numeric" data-conta="${c.id}" style="font-size:15px;padding:8px 0" ${moneyAttrs(c.saldo)}></div></div></div>`).join('')
+    ||'<p style="font-size:14.5px;color:var(--ink-3)">Nenhuma conta cadastrada.</p>'}
+  <button class="btn sec sm" data-act="novaConta">+ Conta ou caixinha</button>
+  <div class="sec-h" style="margin-top:24px"><h2>Investimentos</h2></div>
+  ${DB.investimentos.map(i=>`<div class="row" style="--acc:var(--verde)">
+    <div class="tx"><b>${esc(i.nome)}</b><span>${esc(i.classe)}</span></div>
+    <div class="rt" style="width:130px"><div class="inp" style="min-height:44px;padding:0 10px"><span class="pre">R$</span>
+      <input inputmode="numeric" data-inv="${i.id}" style="font-size:15px;padding:8px 0" ${moneyAttrs(i.valor)}></div></div></div>`).join('')
+    ||'<p style="font-size:14.5px;color:var(--ink-3)">Nenhum investimento cadastrado.</p>'}
+  <button class="btn sec sm" data-act="novoInvestimento">+ Investimento</button>
+  <div class="sec-h" style="margin-top:24px"><h2>Dívidas</h2></div>
+  ${DB.dividas.map(d=>`<div class="row" style="--acc:var(--brasa)">
+    <div class="tx"><b>${esc(d.nome)}</b><span>${pc(d.taxa,1)} ao mês</span></div>
+    <div class="rt" style="width:130px"><div class="inp" style="min-height:44px;padding:0 10px"><span class="pre">R$</span>
+      <input inputmode="numeric" data-div="${d.id}" style="font-size:15px;padding:8px 0" ${moneyAttrs(d.saldo)}></div></div></div>`).join('')
+    ||'<p style="font-size:14.5px;color:var(--ink-3)">Nenhuma dívida.</p>'}
+  <button class="btn sec sm" data-act="novaDivida">+ Dívida</button>
+  ${T.faturaAberta>0?`<div class="preview" style="--acc:var(--ouro);margin-top:22px"><div class="l">Fatura em aberto</div>
+    <div class="v">${R$(T.faturaAberta)}</div><div class="n">Ao pagar, marque aqui. Não vira gasto novo — as compras já foram contadas.</div></div>
+    <button class="btn sec sm" data-act="pagarFatura">Marcar fatura como paga</button>`:''}
+  <button class="btn" style="--acc:var(--verde)" data-act="salvarPatrimonio">Salvar</button>`;
+
+const formSimples=(titulo,campos,acao)=>`
+  ${campos.map(c=>`<div class="field"><label>${c.l}</label>
+    <div class="inp">${c.pre?`<span class="pre">${c.pre}</span>`:''}
+      <input id="${c.id}" ${c.tipo==='money'?`inputmode="numeric" data-money="1"`:c.tipo?`type="${c.tipo}"`:''}
+        placeholder="${c.ph||''}" value="${esc(c.v||'')}"></div>
+    ${c.hint?`<div class="hint">${c.hint}</div>`:''}</div>`).join('')}
+  ${campos.filter(c=>c.opcoes).map(c=>'').join('')}
+  <button class="btn" style="--acc:var(--ouro)" data-act="${acao}">Salvar</button>
+  <button class="btn sec" data-act="fechar">Cancelar</button>`;
+
+const formMeta=()=>`
+  <div class="field"><label for="mtNome">O que você quer conquistar?</label>
+    <div class="inp"><input id="mtNome" placeholder="Ex: viagem para a praia"></div></div>
+  <div class="field"><label for="mtAlvo">Quanto custa</label>
+    <div class="inp"><span class="pre">R$</span><input id="mtAlvo" inputmode="numeric" data-money="1" placeholder="0,00"></div></div>
+  <div class="field"><label for="mtAtual">Já tem guardado</label>
+    <div class="inp"><span class="pre">R$</span><input id="mtAtual" inputmode="numeric" data-money="1" placeholder="0,00"></div></div>
+  <div class="field"><label>Para quando</label>
+    <div class="chips" style="--acc:var(--violeta)">${[[6,'6 meses'],[12,'1 ano'],[24,'2 anos'],[60,'5 anos']].map(([v,l],k)=>
+      `<button class="chip" data-act="prazoMeta" data-val="${v}" aria-pressed="${k===1}">${l}</button>`).join('')}</div>
+    <input type="hidden" id="mtMeses" value="12"></div>
+  <div class="preview" style="--acc:var(--violeta)"><div class="l">Você vai precisar guardar</div>
+    <div class="v" id="mtPrev">R$ 0,00</div><div class="n" id="mtPrevN">por mês, até chegar lá</div></div>
+  <button class="btn" style="--acc:var(--violeta)" data-act="salvarMeta">Salvar meta</button>
+  <button class="btn sec" data-act="fechar">Cancelar</button>`;
+
+const formPerfis=()=>`
+  <p style="font-size:15px;line-height:1.6;color:var(--ink-2);margin:0 0 8px">
+    Cada perfil tem seus próprios lançamentos, plano e metas. Nada se mistura.</p>
+  ${PERFIS.map(p=>`<div class="row click" data-act="trocar" data-val="${p.id}" style="--acc:var(${p.cor})">
+    <span class="ic">${p.emoji}</span>
+    <div class="tx"><b>${esc(p.nome)}</b><span>${p.id===perfilAtivo?'em uso agora':'toque para entrar'}</span></div>
+    <div class="rt">${p.id===perfilAtivo?'<span class="pill ok">ativo</span>':''}</div></div>`).join('')}
+  <div class="field"><label for="pfNome">Novo perfil</label>
+    <div class="inp"><input id="pfNome" placeholder="Nome da pessoa"></div></div>
+  <button class="btn" style="--acc:var(--ouro)" data-act="criarPerfil">Criar perfil</button>
+  ${PERFIS.length>1?`<button class="btn dgr" data-act="apagarPerfil">Apagar o perfil "${esc(perfil().nome)}"</button>`:''}`;
+
 function previewMeta(){
-  const alvo=+document.getElementById('fAlvo')?.dataset.raw||0;
-  const atual=+document.getElementById('fAtual')?.dataset.raw||0;
-  const ms=mesesForm(), sel=document.getElementById('fOnde');
-  const i=aoMes(+sel.value), c=Math.pow(1+i,ms);
-  const pmt=Math.max(0,(alvo-atual*c)*i/(c-1));
-  const semRend=Math.max(0,(alvo-atual)/ms);
-  document.getElementById('prevV').textContent=_brl(pmt);
-  document.getElementById('prevN').textContent=alvo>0
-    ? `por mês, durante ${ms} ${ms>1?'meses':'mês'}. Sem render nada seriam ${_brl(semRend)} — o rendimento poupa ${_brl(Math.max(0,semRend-pmt))} por mês.`
-    : 'por mês, até chegar lá';
+  const el=document.getElementById('mtPrev');if(!el)return;
+  const alvo=+(document.getElementById('mtAlvo')?.dataset.raw||0);
+  const atual=+(document.getElementById('mtAtual')?.dataset.raw||0);
+  const ms=+(document.getElementById('mtMeses')?.value||12);
+  const i=aoMes(DB.config.cdi),c=Math.pow(1+i,ms);
+  const pmt=Math.max(0,(alvo-atual*c)*i/(c-1)),sem=Math.max(0,(alvo-atual)/ms);
+  el.textContent=_brl(pmt);
+  document.getElementById('mtPrevN').textContent=alvo>0
+    ?`por mês, durante ${ms} ${ms>1?'meses':'mês'}. Sem render seriam ${_brl(sem)} — o rendimento poupa ${_brl(sem-pmt)}.`
+    :'por mês, até chegar lá';
 }
 function mascara(el){
   const d=el.value.replace(/\D/g,'').slice(0,11);
   el.dataset.raw=d?(parseInt(d,10)/100):'';
   el.value=d?(parseInt(d,10)/100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'';
 }
+function lerCampos(){
+  document.querySelectorAll('[data-campo]').forEach(el=>{
+    const c=el.dataset.campo;
+    rascunho[c]=el.dataset.money!==undefined||el.dataset.raw!==undefined
+      ?(el.dataset.raw!==''?+el.dataset.raw:0)
+      :(c==='dia'?+el.value:el.value);
+  });
+}
+const redesenhar=(fn)=>{lerCampos();document.getElementById('shBody').innerHTML=fn()};
 
-/* ═══════════ FOLHA, AVISO, AJUDA ═══════════ */
+/* ═════════ AÇÕES ═════════ */
+const ACOES={
+  ir:v=>irPara(v),
+  ajuda:()=>abrirFolha('Ajuda',`
+    <p style="font-size:15.5px;line-height:1.6;color:var(--ink-2);margin:0 0 20px">Como o app funciona, em português claro.</p>
+    ${[['O Oráculo','Ele lê o que você registra e mostra a realidade: para onde o dinheiro foi, se cabe no plano, quanto sobra. Não recomenda investimento — mostra os números e a decisão é sua.'],
+       ['Falar com ele','Você pode escrever ou falar. "Gastei 50 no mercado" vira lançamento. "Posso gastar 400 num tênis?" vira uma conta com o antes e o depois.'],
+       ['Perfis','Cada pessoa tem seus próprios dados. Toque no símbolo do canto para trocar ou criar.'],
+       ['Fixos do mês','Salário, vale refeição, aluguel, streamings. Cadastre uma vez e lance todos com um toque.'],
+       ['Vale refeição','Entra separado do dinheiro livre, porque só serve para comida. O app não soma com o resto.'],
+       ['Aporte não é gasto','Dinheiro investido sai da conta mas vira patrimônio. Por isso tem coluna própria.'],
+      ].map(([t,d])=>`<div class="gl2"><b>${t}</b><p>${d}</p></div>`).join('')}
+    <button class="btn sec" data-act="exemplo">Carregar dados de exemplo</button>
+    <button class="btn dgr" data-act="apagarTudo">Apagar os dados deste perfil</button>`),
+  olho:()=>{ocultar=!ocultar;guardar('ocultar',ocultar);
+    document.getElementById('btEye').textContent=ocultar?'🙈':'👁';manter()},
+  mesAnt:()=>{const d=new Date(mesVisto+'-01T12:00');d.setMonth(d.getMonth()-1);mesVisto=d.toISOString().slice(0,7);atualizar()},
+  mesProx:()=>{const d=new Date(mesVisto+'-01T12:00');d.setMonth(d.getMonth()+1);
+    const m=d.toISOString().slice(0,7);
+    if(m>mesAtual()){aviso('Esse mês ainda não chegou');return}
+    mesVisto=m;atualizar()},
+  exemplo:()=>{carregarExemplo();fecharFolha();atualizar();aviso('Dados de exemplo carregados')},
+  apagarTudo:()=>abrirFolha('Apagar tudo',`
+    <p style="font-size:16px;line-height:1.6;color:var(--ink-2)">Isso apaga todos os lançamentos, metas e planos do perfil <b>${esc(perfil().nome)}</b>. Não dá para desfazer.</p>
+    <button class="btn dgr" data-act="confApagar">Sim, apagar tudo</button>
+    <button class="btn sec" data-act="fechar">Cancelar</button>`),
+  confApagar:()=>{DB=vazio();persistir();fecharFolha();tela='inicio';atualizar();aviso('Dados apagados')},
+
+  /* perfis */
+  perfis:()=>abrirFolha('Perfis',formPerfis()),
+  trocar:v=>{if(v!==perfilAtivo)trocarPerfil(v);else fecharFolha()},
+  criarPerfil:()=>{
+    const n=document.getElementById('pfNome').value.trim();
+    if(!n){aviso('Dê um nome ao perfil');return}
+    const p={id:uid(),nome:n,emoji:EMOJIS[PERFIS.length%EMOJIS.length],cor:CORES[PERFIS.length%CORES.length]};
+    PERFIS.push(p);guardar('perfis',PERFIS);trocarPerfil(p.id);aviso(`Perfil de ${n} criado`)},
+  apagarPerfil:()=>{
+    if(PERFIS.length<2)return;
+    const id=perfilAtivo,nome=perfil().nome;
+    PERFIS=PERFIS.filter(p=>p.id!==id);guardar('perfis',PERFIS);
+    try{localStorage.removeItem('gr.db.'+id)}catch(e){}
+    trocarPerfil(PERFIS[0].id);aviso(`Perfil de ${nome} apagado`)},
+
+  /* lançamentos */
+  novoLanc:()=>{rascunho={};abrirFolha('Novo lançamento',()=>formLanc())},
+  editarLanc:v=>{rascunho={};abrirFolha('Editar lançamento',()=>formLanc(v))},
+  tipoLanc:v=>{rascunho.tipo=v;rascunho.cat=v==='aporte'?'Aporte':'';redesenhar(()=>formLanc(rascunho.id))},
+  catLanc:v=>{rascunho.cat=v;redesenhar(()=>formLanc(rascunho.id))},
+  meioLanc:v=>{rascunho.meio=v;redesenhar(()=>formLanc(rascunho.id))},
+  dataLanc:v=>{rascunho.data=v;redesenhar(()=>formLanc(rascunho.id))},
+  novaCategoria:()=>abrirFolha('Nova categoria',formSimples('',[
+    {id:'ncNome',l:'Nome da categoria',ph:'Ex: Cabelo'}],'salvarCategoria')+
+    `<div class="field"><label>É uma conta obrigatória?</label>
+      <div class="chips" style="--acc:var(--azul)">
+        <button class="chip" id="ncSim" data-act="marcarEss" data-val="1" aria-pressed="false">Sim, obrigatória</button>
+        <button class="chip" id="ncNao" data-act="marcarEss" data-val="0" aria-pressed="true">Não, é escolha</button></div></div>`),
+  marcarEss:(v,el)=>{el.parentNode.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+    el.setAttribute('aria-pressed','true')},
+  salvarCategoria:()=>{
+    const n=document.getElementById('ncNome').value.trim();
+    if(!n){aviso('Dê um nome');return}
+    const ess=document.getElementById('ncSim').getAttribute('aria-pressed')==='true';
+    DB.categorias.push({n,e:ess,g:'◇'});persistir();
+    rascunho.cat=n;abrirFolha('Novo lançamento',()=>formLanc(rascunho.id));aviso('Categoria criada')},
+  salvarLanc:v=>{
+    lerCampos();
+    if(!rascunho.valor||rascunho.valor<=0){aviso('Informe o valor');return}
+    if(!rascunho.cat){aviso('Escolha uma categoria');return}
+    if(v)Object.assign(DB.lancamentos.find(x=>x.id===v),rascunho);
+    else DB.lancamentos.push({...rascunho,id:uid(),pago:rascunho.meio!=='credito'});
+    persistir();fecharFolha();mesVisto=mesDe(rascunho.data);atualizar();aviso(v?'Atualizado':'Registrado')},
+  delLanc:v=>{DB.lancamentos=DB.lancamentos.filter(x=>x.id!==v);persistir();fecharFolha();atualizar();aviso('Excluído')},
+  desfazer:v=>{DB.lancamentos=DB.lancamentos.filter(x=>x.id!==v);
+    DB.chat.push({de:'or',html:'Pronto, desfeito.'});persistir();atualizar();rolarChat()},
+
+  /* recorrentes */
+  novoRecorrente:()=>{rascunho={};abrirFolha('Fixo do mês',()=>formRecorrente())},
+  editarRecorrente:v=>{rascunho={};abrirFolha('Fixo do mês',()=>formRecorrente(v))},
+  tipoRec:v=>{rascunho.tipo=v;rascunho.cat='';redesenhar(()=>formRecorrente(rascunho.id))},
+  catRec:v=>{rascunho.cat=v;redesenhar(()=>formRecorrente(rascunho.id))},
+  meioRec:v=>{rascunho.meio=v;redesenhar(()=>formRecorrente(rascunho.id))},
+  salvarRecorrente:v=>{
+    lerCampos();
+    if(!rascunho.nome){aviso('Dê um nome');return}
+    if(!rascunho.valor){aviso('Informe o valor');return}
+    if(!rascunho.cat){aviso('Escolha uma categoria');return}
+    if(v)Object.assign(DB.recorrentes.find(x=>x.id===v),rascunho);
+    else DB.recorrentes.push({...rascunho,id:uid(),ativo:true});
+    persistir();fecharFolha();atualizar();aviso(v?'Atualizado':'Fixo cadastrado')},
+  delRecorrente:v=>{DB.recorrentes=DB.recorrentes.filter(x=>x.id!==v);persistir();fecharFolha();atualizar();aviso('Removido')},
+  lancarFixos:()=>{
+    let n=0;
+    T.pendentes.forEach(r=>{
+      const dia=String(Math.min(r.dia||5,diasNoMes(mesVisto))).padStart(2,'0');
+      DB.lancamentos.push({id:uid(),recId:r.id,data:`${mesVisto}-${dia}`,tipo:r.tipo,valor:r.valor,
+        cat:r.cat,meio:r.meio||(r.tipo==='entrada'?'pix':'debito'),desc:r.nome,pago:r.meio!=='credito'});
+      n++;
+    });
+    persistir();atualizar();aviso(`${n} lançamento(s) criado(s)`)},
+
+  /* orçamento e patrimônio */
+  editarOrcamento:()=>abrirFolha('Plano do mês',formOrcamento),
+  salvarOrcamento:()=>{
+    document.querySelectorAll('[data-orc]').forEach(el=>{
+      const v=+(el.dataset.raw||0);
+      if(v>0)DB.orcamento[el.dataset.orc]=v;
+      else if(el.value.trim()==='')delete DB.orcamento[el.dataset.orc];
+    });
+    persistir();fecharFolha();atualizar();aviso('Plano salvo')},
+  editarAporte:()=>abrirFolha('Quanto quero investir',`
+    <p style="font-size:15px;line-height:1.6;color:var(--ink-2);margin:0">Quanto você quer investir por mês.</p>
+    <div class="field"><label for="apVal">Valor mensal</label>
+      <div class="inp"><span class="pre">R$</span><input id="apVal" inputmode="numeric" data-money="1"
+        data-raw="${DB.aporteMeta||''}" value="${DB.aporteMeta?DB.aporteMeta.toLocaleString('pt-BR',{minimumFractionDigits:2}):''}" placeholder="0,00"></div>
+      <div class="hint">Uma referência comum é 20% do que entra — no seu caso, ${R$(T.entradas*.2)}.</div></div>
+    <button class="btn" style="--acc:var(--violeta)" data-act="salvarAporte">Salvar</button>
+    <button class="btn sec" data-act="fechar">Cancelar</button>`),
+  salvarAporte:()=>{DB.aporteMeta=+(document.getElementById('apVal').dataset.raw||0);
+    persistir();fecharFolha();atualizar();aviso('Salvo')},
+  patrimonio:()=>abrirFolha('Seu dinheiro',formPatrimonio),
+  salvarPatrimonio:()=>{
+    document.querySelectorAll('[data-conta]').forEach(el=>{const c=DB.contas.find(x=>x.id===el.dataset.conta);if(c)c.saldo=+(el.dataset.raw||0)});
+    document.querySelectorAll('[data-inv]').forEach(el=>{const i=DB.investimentos.find(x=>x.id===el.dataset.inv);if(i)i.valor=+(el.dataset.raw||0)});
+    document.querySelectorAll('[data-div]').forEach(el=>{const d=DB.dividas.find(x=>x.id===el.dataset.div);if(d)d.saldo=+(el.dataset.raw||0)});
+    persistir();fecharFolha();atualizar();aviso('Saldos atualizados')},
+  novaConta:()=>abrirFolha('Nova conta',`
+    <div class="field"><label for="ncoNome">Nome</label><div class="inp"><input id="ncoNome" placeholder="Conta corrente"></div></div>
+    <div class="field"><label>Esse dinheiro rende?</label>
+      <div class="chips" style="--acc:var(--verde)">
+        <button class="chip" id="ncoSim" data-act="marcarEss" aria-pressed="false">Sim, rende</button>
+        <button class="chip" id="ncoNao" data-act="marcarEss" aria-pressed="true">Não rende</button></div></div>
+    <button class="btn" style="--acc:var(--verde)" data-act="salvarConta">Adicionar</button>
+    <button class="btn sec" data-act="patrimonio">Voltar</button>`),
+  salvarConta:()=>{
+    const n=document.getElementById('ncoNome').value.trim();
+    if(!n){aviso('Dê um nome');return}
+    DB.contas.push({id:uid(),nome:n,saldo:0,rende:document.getElementById('ncoSim').getAttribute('aria-pressed')==='true'});
+    persistir();abrirFolha('Seu dinheiro',formPatrimonio);aviso('Conta adicionada')},
+  novoInvestimento:()=>abrirFolha('Novo investimento',`
+    <div class="field"><label for="niNome">Nome</label><div class="inp"><input id="niNome" placeholder="Tesouro Selic 2029"></div></div>
+    <div class="field"><label for="niClasse">Tipo</label>
+      <div class="inp"><select id="niClasse">${CLASSES.map(c=>`<option>${c}</option>`).join('')}</select><span class="pre">▾</span></div></div>
+    <div class="field"><label>Dá para resgatar em até 1 dia?</label>
+      <div class="chips" style="--acc:var(--verde)">
+        <button class="chip" id="niSim" data-act="marcarEss" aria-pressed="true">Sim</button>
+        <button class="chip" id="niNao" data-act="marcarEss" aria-pressed="false">Não</button></div>
+      <div class="hint">Só o que resgata rápido conta como reserva de emergência.</div></div>
+    <button class="btn" style="--acc:var(--verde)" data-act="salvarInvestimento">Adicionar</button>
+    <button class="btn sec" data-act="patrimonio">Voltar</button>`),
+  salvarInvestimento:()=>{
+    const n=document.getElementById('niNome').value.trim();
+    if(!n){aviso('Dê um nome');return}
+    DB.investimentos.push({id:uid(),nome:n,classe:document.getElementById('niClasse').value,valor:0,
+      liquido:document.getElementById('niSim').getAttribute('aria-pressed')==='true'});
+    persistir();abrirFolha('Seu dinheiro',formPatrimonio);aviso('Investimento adicionado')},
+  novaDivida:()=>abrirFolha('Nova dívida',`
+    <div class="field"><label for="ndNome">Nome</label><div class="inp"><input id="ndNome" placeholder="Parcelamento da fatura"></div></div>
+    <div class="field"><label for="ndTaxa">Juros ao mês</label>
+      <div class="inp"><input id="ndTaxa" inputmode="decimal" placeholder="11,2"><span class="pre">%</span></div>
+      <div class="hint">Se não souber, deixe em branco.</div></div>
+    <button class="btn" style="--acc:var(--brasa)" data-act="salvarDivida">Adicionar</button>
+    <button class="btn sec" data-act="patrimonio">Voltar</button>`),
+  salvarDivida:()=>{
+    const n=document.getElementById('ndNome').value.trim();
+    if(!n){aviso('Dê um nome');return}
+    const t=parseFloat((document.getElementById('ndTaxa').value||'0').replace(',','.'))/100;
+    DB.dividas.push({id:uid(),nome:n,saldo:0,taxa:t||0});
+    persistir();abrirFolha('Seu dinheiro',formPatrimonio);aviso('Dívida adicionada')},
+  pagarFatura:()=>{DB.lancamentos.forEach(l=>{if(l.meio==='credito')l.pago=true});
+    persistir();fecharFolha();atualizar();aviso('Fatura marcada como paga')},
+
+  /* metas */
+  novaMeta:()=>abrirFolha('Nova meta',formMeta),
+  prazoMeta:(v,el)=>{el.parentNode.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+    el.setAttribute('aria-pressed','true');document.getElementById('mtMeses').value=v;previewMeta()},
+  salvarMeta:()=>{
+    const n=document.getElementById('mtNome').value.trim();
+    const alvo=+(document.getElementById('mtAlvo').dataset.raw||0);
+    if(!n||!alvo){aviso('Preencha nome e valor');return}
+    const ms=+document.getElementById('mtMeses').value,d=new Date();d.setMonth(d.getMonth()+ms);
+    DB.metas.push({id:uid(),n,alvo,atual:+(document.getElementById('mtAtual').dataset.raw||0),
+      prazo:d.toISOString().slice(0,10),taxa:DB.config.cdi});
+    persistir();fecharFolha();tela='metas';atualizar();aviso('Meta criada')},
+  guardarMeta:v=>abrirFolha('Guardar na meta',`
+    <p style="font-size:15px;color:var(--ink-2);margin:0">Quanto você guardou em <b>${esc(DB.metas.find(m=>m.id===v).n)}</b>?</p>
+    <div class="field"><label for="gmVal">Valor</label>
+      <div class="inp grande" style="--acc:var(--violeta)"><span class="pre">R$</span>
+        <input id="gmVal" inputmode="numeric" data-money="1" placeholder="0,00"></div></div>
+    <button class="btn" style="--acc:var(--violeta)" data-act="confGuardar" data-val="${v}">Guardar</button>
+    <button class="btn sec" data-act="fechar">Cancelar</button>`),
+  confGuardar:v=>{
+    const val=+(document.getElementById('gmVal').dataset.raw||0);
+    if(!val){aviso('Informe o valor');return}
+    DB.metas.find(m=>m.id===v).atual+=val;persistir();fecharFolha();atualizar();aviso(`${_brl(val)} guardados`)},
+  delMeta:v=>{DB.metas=DB.metas.filter(x=>x.id!==v);persistir();atualizar();aviso('Meta removida')},
+
+  /* conversa */
+  perguntar:v=>{irPara('oraculo');
+    const mapa={ritmo:'como vou fechar o mês?',estouro:'tô dentro do plano?',divida:'e minhas dívidas',
+      fatura:'e minhas dívidas',parado:'tenho dinheiro parado?',reserva:'minha reserva tá boa?',
+      pendentes:'quanto sobrou?'};
+    setTimeout(()=>conversar(mapa[v]||'onde meu dinheiro tá indo?'),120)},
+  enviar:()=>{const el=document.getElementById('entrada');const t=el.value.trim();
+    if(!t)return;el.value='';conversar(t)},
+  sugestao:v=>conversar(v),
+  microfone:()=>ouvir(),
+  fechar:()=>fecharFolha(),
+};
+
+/* ═════════ CONVERSA ═════════ */
+function conversar(txt){
+  if(tela!=='oraculo')irPara('oraculo');
+  DB.chat.push({de:'eu',txt});
+  render();rolarChat();
+  const q=entender(txt);
+  const espera=Math.min(700,260+txt.length*8);
+  setTimeout(()=>{
+    let r;
+    try{r=responder(q)}
+    catch(e){r={html:'Deu um problema aqui ao calcular isso. Tenta perguntar de outro jeito?',chips:['o que você faz?']}}
+    DB.chat.push({de:'or',html:r.html,chips:r.chips,desfazer:r.desfazer});
+    if(DB.chat.length>60)DB.chat=DB.chat.slice(-60);
+    persistir();atualizar();rolarChat();
+  },espera);
+}
+function rolarChat(){
+  requestAnimationFrame(()=>{const m=document.getElementById('view');if(m)m.scrollTop=m.scrollHeight});
+}
+function pintarSugestoes(){
+  const el=document.getElementById('sugs');if(!el)return;
+  const ult=[...DB.chat].reverse().find(m=>m.de==='or'&&m.chips);
+  const chips=ult?ult.chips:['onde meu dinheiro tá indo?','quanto sobrou?'];
+  el.innerHTML=chips.map(c=>`<button data-act="sugestao" data-val="${esc(c)}">${esc(c)}</button>`).join('');
+}
+let reconhecimento=null;
+function ouvir(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const bt=document.getElementById('btMic');
+  if(!SR){aviso('Este aparelho não permite ditado aqui — pode digitar');return}
+  if(reconhecimento){reconhecimento.stop();reconhecimento=null;bt.dataset.ouvindo='0';return}
+  reconhecimento=new SR();
+  reconhecimento.lang='pt-BR';reconhecimento.interimResults=false;
+  bt.dataset.ouvindo='1';
+  reconhecimento.onresult=e=>{const t=e.results[0][0].transcript;document.getElementById('entrada').value=t;
+    setTimeout(()=>ACOES.enviar(),150)};
+  reconhecimento.onerror=()=>{aviso('Não consegui ouvir');};
+  reconhecimento.onend=()=>{bt.dataset.ouvindo='0';reconhecimento=null};
+  try{reconhecimento.start()}catch(e){bt.dataset.ouvindo='0';reconhecimento=null}
+}
+
+/* ═════════ NAVEGAÇÃO E RENDER ═════════ */
+const NAV=[
+  {id:'inicio',g:'ᛝ',t:'Início',tit:'Início'},
+  {id:'extrato',g:'ᚠ',t:'Extrato',tit:'Extrato'},
+  {id:'orcamento',g:'ᛒ',t:'Plano',tit:'Plano do mês'},
+  {id:'metas',g:'ᛞ',t:'Metas',tit:'Metas'},
+  {id:'oraculo',g:'◬',t:'Oráculo',tit:'Oráculo'},
+];
+let tela='inicio';
+const rolagem={};
+const $v=()=>document.getElementById('view');
+
+function render(anim){
+  calcular();
+  const t=NAV.find(x=>x.id===tela),p=perfil();
+  document.getElementById('hTt').textContent=t.tit;
+  const h=new Date().getHours();
+  document.getElementById('hHi').textContent=`${h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}, ${p.nome}`;
+  const av=document.getElementById('btAv');
+  av.textContent=p.emoji;av.style.color=`var(${p.cor})`;
+  const m=$v();
+  m.innerHTML=TELAS[tela]();
+  m.dataset.chat=tela==='oraculo'?'1':'0';
+  if(anim){m.removeAttribute('data-anim');void m.offsetWidth;m.dataset.anim='1'}
+  document.getElementById('composer').dataset.on=tela==='oraculo'?'1':'0';
+  document.getElementById('fab').hidden=tela==='oraculo';
+  if(tela==='oraculo')pintarSugestoes();
+  document.getElementById('nav').innerHTML=NAV.map(x=>`
+    <button data-act="ir" data-val="${x.id}" aria-current="${x.id===tela?'page':'false'}">
+      <span class="g" aria-hidden="true">${x.g}</span><span class="t">${x.t}</span></button>`).join('');
+}
+const atualizar=()=>render(false);
+function manter(){const y=$v().scrollTop;render(false);$v().scrollTop=y}
+function irPara(id){
+  if(id===tela){$v().scrollTo({top:0,behavior:'smooth'});return}
+  rolagem[tela]=$v().scrollTop;tela=id;render(true);
+  if(id==='oraculo')rolarChat();else $v().scrollTop=rolagem[id]||0;
+  document.querySelector('header').dataset.scrolled='0';
+}
+
+/* ═════════ FOLHA, AVISOS, EXEMPLO ═════════ */
 const bd=document.getElementById('bd'),sheet=document.getElementById('sheet');
-function abrirFolha(titulo,html){
+function abrirFolha(titulo,conteudo){
   document.getElementById('shTitle').textContent=titulo;
-  document.getElementById('shBody').innerHTML=html;
+  document.getElementById('shBody').innerHTML=typeof conteudo==='function'?conteudo():conteudo;
   bd.dataset.open='1';sheet.dataset.open='1';
-  const f=sheet.querySelector('input,select,button');f&&setTimeout(()=>f.focus({preventScroll:true}),200);
-  if(document.getElementById('prev'))previewMeta();
+  const f=sheet.querySelector('input:not([type=hidden]):not([type=date])');
+  if(f)setTimeout(()=>f.focus({preventScroll:true}),260);
+  if(document.getElementById('mtPrev'))previewMeta();
 }
 function fecharFolha(){bd.dataset.open='0';sheet.dataset.open='0'}
 let tid;
-function aviso(msg){const t=document.getElementById('toast');
+function aviso(msg,acao){
+  const t=document.getElementById('toast');
   t.innerHTML=`<span style="color:var(--ouro);font-size:17px">✓</span><span>${esc(msg)}</span>`;
-  t.dataset.open='1';clearTimeout(tid);tid=setTimeout(()=>t.dataset.open='0',2800)}
-
-const GLOSSARIO=[
-  ['CDI','A taxa que os bancos usam entre si. Virou a régua da renda fixa: quando um investimento diz "100% do CDI", ele entrega essa taxa cheia. Hoje está em 13,90% ao ano.'],
-  ['Selic','A taxa básica de juros do país, definida pelo Banco Central a cada 45 dias. Ela puxa todas as outras. Hoje está em 14% ao ano.'],
-  ['Liquidez','A rapidez com que você consegue transformar um investimento em dinheiro na conta. "D+0" é no mesmo dia, "D+1" é no dia seguinte.'],
-  ['Reserva de emergência','Dinheiro guardado num lugar de resgate rápido, para imprevistos. A referência é cobrir de 6 a 12 meses das suas contas obrigatórias.'],
-  ['IPCA','O índice oficial da inflação. Se seu investimento rende menos que ele, seu dinheiro perde poder de compra mesmo com o saldo subindo.'],
-  ['FGC','Fundo que devolve seu dinheiro se o banco quebrar, até R$ 250 mil por banco e R$ 1 milhão por CPF a cada 4 anos. Cobre conta, caixinha, CDB, LCI e LCA.'],
-  ['Imposto sobre rendimento','Na renda fixa, quanto mais tempo o dinheiro fica aplicado, menos imposto: 22,5% até 6 meses, caindo até 15% depois de 2 anos. O desconto é só sobre o lucro.'],
-];
-function abrirAjuda(){
-  abrirFolha('Ajuda',
-    `<p style="font-size:15.5px;line-height:1.6;color:var(--ink-2);margin:0 0 22px">Termos que aparecem no app, em português claro.</p>
-     ${GLOSSARIO.map(([t,d])=>`<div class="gl"><b>${t}</b><p>${d}</p></div>`).join('')}
-     <button class="btn sec" data-act="tour">Rever a apresentação</button>`);
+  t.dataset.open='1';clearTimeout(tid);tid=setTimeout(()=>t.dataset.open='0',2600);
+}
+function carregarExemplo(){
+  const h=new Date(),m=h.getMonth(),a=h.getFullYear();
+  const d=dia=>new Date(a,m,Math.min(dia,h.getDate())).toISOString().slice(0,10);
+  DB=vazio();
+  DB.contas=[{id:uid(),nome:'Conta corrente',saldo:1850,rende:false},
+             {id:uid(),nome:'Caixinha da reserva',saldo:12400,rende:true}];
+  DB.investimentos=[{id:uid(),nome:'Tesouro Selic 2029',classe:CLASSES[0],valor:8300,liquido:true},
+                    {id:uid(),nome:'Ações e ETFs',classe:CLASSES[4],valor:7450,liquido:false}];
+  DB.dividas=[{id:uid(),nome:'Parcelamento da fatura',saldo:1850,taxa:.112}];
+  DB.recorrentes=[
+    {id:uid(),tipo:'entrada',nome:'Salário',valor:5200,cat:'Salário',dia:5,ativo:true},
+    {id:uid(),tipo:'entrada',nome:'Vale refeição',valor:900,cat:'Vale refeição',dia:5,ativo:true},
+    {id:uid(),tipo:'saida',nome:'Aluguel',valor:1450,cat:'Moradia',dia:10,meio:'debito',ativo:true},
+    {id:uid(),tipo:'saida',nome:'Internet e luz',valor:410,cat:'Contas de casa',dia:12,meio:'debito',ativo:true},
+    {id:uid(),tipo:'saida',nome:'Streamings',valor:112,cat:'Assinaturas',dia:8,meio:'credito',ativo:true},
+    {id:uid(),tipo:'saida',nome:'Academia',valor:120,cat:'Lazer',dia:6,meio:'credito',ativo:true},
+  ];
+  const c=DB.recorrentes;
+  DB.lancamentos=[
+    {id:uid(),recId:c[0].id,data:d(5),tipo:'entrada',valor:5200,cat:'Salário',meio:'pix',desc:'Salário'},
+    {id:uid(),recId:c[1].id,data:d(5),tipo:'entrada',valor:900,cat:'Vale refeição',meio:'pix',desc:'Vale refeição'},
+    {id:uid(),recId:c[2].id,data:d(10),tipo:'saida',valor:1450,cat:'Moradia',meio:'debito',desc:'Aluguel',pago:true},
+    {id:uid(),recId:c[4].id,data:d(8),tipo:'saida',valor:112,cat:'Assinaturas',meio:'credito',desc:'Streamings'},
+    {id:uid(),data:d(6),tipo:'saida',valor:480,cat:'Mercado',meio:'credito',desc:'Mercado do mês'},
+    {id:uid(),data:d(9),tipo:'saida',valor:186,cat:'Restaurantes',meio:'credito'},
+    {id:uid(),data:d(11),tipo:'saida',valor:240,cat:'Transporte',meio:'credito'},
+    {id:uid(),data:d(12),tipo:'saida',valor:320,cat:'Mercado',meio:'beneficio',pago:true},
+    {id:uid(),data:d(13),tipo:'saida',valor:295,cat:'Restaurantes',meio:'credito'},
+    {id:uid(),data:d(14),tipo:'aporte',valor:600,cat:'Aporte',meio:'pix',desc:'Investimento do mês',pago:true},
+  ];
+  DB.orcamento={Moradia:1500,Mercado:900,Transporte:400,Saúde:250,'Contas de casa':450,
+    Restaurantes:450,Assinaturas:150,Lazer:300,Roupas:200};
+  DB.aporteMeta=800;
+  DB.metas=[{id:uid(),n:'Reserva de emergência',alvo:21000,atual:12400,
+    prazo:new Date(a+1,m,1).toISOString().slice(0,10),taxa:.139}];
+  DB.chat=[];
+  persistir();
 }
 
-/* ═══════════ APRESENTAÇÃO INICIAL ═══════════ */
+/* ═════════ APRESENTAÇÃO ═════════ */
 const PASSOS=[
-  {mark:'◬',t:'Bem-vindo ao Grimório',
-   p:'Tudo que você tem, num lugar só: contas, caixinhas, investimentos e dívidas. Sem planilha e sem abrir cinco aplicativos.',bt:'Continuar'},
-  {mark:'ᛝ',t:'Cinco lugares, só isso',
-   list:[['ᛝ','Início','o resumo de tudo e o que fazer primeiro'],['ᚠ','Contas','onde seu dinheiro está guardado'],['ᛚ','Investido','em que ele está aplicado'],['ᛞ','Metas','para onde ele está indo'],['◬','Oráculo','o que os seus números dizem']],bt:'Continuar'},
-  {mark:'◇',t:'O Oráculo mostra, você decide',
-   p:'Ele aponta onde tem dinheiro parado, onde você gastou fora do seu padrão e quais caminhos existem — sempre com a conta aberta para você conferir. Ele não é consultor e nunca diz o que comprar.',bt:'Ver meus números'},
+  {mark:'◬',t:'Bem-vindo ao Grimório',p:'Uma planilha de finanças que conversa. Você registra o que entra e o que sai, e o Oráculo mostra a realidade dos seus números.',bt:'Continuar'},
+  {mark:'◈',t:'Fale como quiser',p:'Diga "gastei 50 no mercado" e vira lançamento. Pergunte "posso gastar 400 num tênis?" e ele faz a conta do antes e do depois. Por escrito ou por voz.',bt:'Continuar'},
+  {mark:'↻',t:'Cadastre os fixos uma vez',p:'Salário, vale refeição, aluguel, streamings. O app lembra você todo mês e lança tudo num toque.',bt:'Continuar'},
+  {mark:'✦',t:'Cada pessoa, um perfil',p:'Toque no símbolo do canto superior para criar perfis. Cada um tem seus próprios lançamentos, plano e metas.',bt:'Continuar'},
+  {mark:'◇',t:'Como quer começar?',p:'Pode começar com a folha em branco ou ver o app funcionando com dados de exemplo, e apagar depois.',bt:'Começar do zero',alt:'Ver com exemplo'},
 ];
 let passo=0;
 const tour=document.getElementById('tour');
 function pintarTour(){
   const s=PASSOS[passo];
-  tour.innerHTML=`
-    <div class="body">
-      <div class="mark">${s.mark}</div>
-      <h2>${s.t}</h2>
-      ${s.p?`<p>${s.p}</p>`:''}
-      ${s.list?`<div class="list">${s.list.map(([g,n,d])=>`<div><i>${g}</i><span><b>${n}</b> — ${d}</span></div>`).join('')}</div>`:''}
-    </div>
-    <div class="foot">
-      <div class="dots">${PASSOS.map((_,k)=>`<i class="${k===passo?'on':''}"></i>`).join('')}</div>
-      <button class="btn" style="--acc:var(--ouro)" data-tour="next">${s.bt}</button>
-      ${passo<PASSOS.length-1?`<button class="btn sec" data-tour="skip">Pular apresentação</button>`:''}
-    </div>`;
+  tour.innerHTML=`<div class="body"><div class="mark">${s.mark}</div><h2>${s.t}</h2>
+    ${s.p?`<p>${s.p}</p>`:''}</div>
+    <div class="foot"><div class="dots">${PASSOS.map((_,k)=>`<i class="${k===passo?'on':''}"></i>`).join('')}</div>
+    <button class="btn" style="--acc:var(--ouro)" data-tour="next">${s.bt}</button>
+    ${s.alt?`<button class="btn sec" data-tour="exemplo">${s.alt}</button>`:'<button class="btn sec" data-tour="skip">Pular</button>'}</div>`;
 }
-function abrirTour(){passo=0;tour.dataset.open='1';pintarTour()}
 tour.addEventListener('click',e=>{
   const b=e.target.closest('[data-tour]');if(!b)return;
-  if(b.dataset.tour==='skip'||passo>=PASSOS.length-1){tour.dataset.open='0';return}
+  const a=b.dataset.tour;
+  if(a==='exemplo'){carregarExemplo();tour.dataset.open='0';guardar('viuTour',true);atualizar();aviso('Dados de exemplo carregados');return}
+  if(a==='skip'||passo>=PASSOS.length-1){tour.dataset.open='0';guardar('viuTour',true);atualizar();return}
   passo++;pintarTour();
 });
 
-/* ═══════════ LIGAÇÕES ═══════════ */
-function despachar(e){
-  const el=e.target.closest('[data-act]');if(!el)return;
+/* ═════════ UM ÚNICO OUVINTE PARA TUDO ═════════ */
+document.getElementById('app').addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el)return;
+  const fn=ACOES[el.dataset.act];
+  if(!fn)return;
   e.preventDefault();
-  if(el.dataset.act==='tour'){fecharFolha();abrirTour();return}
-  ACOES[el.dataset.act]?.(el.dataset.val,el);
-}
-document.getElementById('view').addEventListener('click',despachar);
-document.getElementById('shBody').addEventListener('click',despachar);
-document.getElementById('view').addEventListener('keydown',e=>{
-  if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-act]')){despachar(e)}});
-document.getElementById('shBody').addEventListener('input',e=>{
-  if(e.target.dataset.money)mascara(e.target);
-  if(document.getElementById('prev'))previewMeta();
+  fn(el.dataset.val,el);
 });
-document.getElementById('shBody').addEventListener('change',()=>{if(document.getElementById('prev'))previewMeta()});
-document.getElementById('nav').addEventListener('click',e=>{
-  const b=e.target.closest('[data-nav]');if(b)ir(b.dataset.nav)});
-document.getElementById('btEye').addEventListener('click',()=>{
-  ocultar=!ocultar;document.getElementById('btEye').textContent=ocultar?'🙈':'👁';render();
-  aviso(ocultar?'Valores ocultos':'Valores visíveis')});
-document.getElementById('btHelp').addEventListener('click',abrirAjuda);
-document.getElementById('btClose').addEventListener('click',fecharFolha);
-bd.addEventListener('click',fecharFolha);
+document.getElementById('app').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const el=e.target.closest('[data-act]');
+  if(!el||el.tagName==='INPUT'||el.tagName==='SELECT')return;
+  e.preventDefault();ACOES[el.dataset.act]?.(el.dataset.val,el);
+});
+document.getElementById('shBody').addEventListener('input',e=>{
+  if(e.target.dataset.money!==undefined||e.target.dataset.orc!==undefined||
+     e.target.dataset.conta!==undefined||e.target.dataset.inv!==undefined||e.target.dataset.div!==undefined)
+    if(e.target.inputMode==='numeric')mascara(e.target);
+  if(document.getElementById('mtPrev'))previewMeta();
+  const tot=document.getElementById('orcTotal');
+  if(tot){let s=0;document.querySelectorAll('[data-orc]').forEach(el=>s+=+(el.dataset.raw||0));tot.textContent=_brl(s)}
+});
+document.getElementById('entrada').addEventListener('keydown',e=>{if(e.key==='Enter')ACOES.enviar()});
+$v().addEventListener('scroll',()=>{
+  document.querySelector('header').dataset.scrolled=$v().scrollTop>4?'1':'0'},{passive:true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharFolha()});
-
-/* Sombra no cabeçalho quando o conteúdo rola por baixo dele */
-$view().addEventListener('scroll',()=>{
-  document.querySelector('header').dataset.scrolled=$view().scrollTop>4?'1':'0';
-},{passive:true});
-
-/* Reajusta a altura quando o teclado abre ou a tela gira */
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',()=>{
-    document.querySelector('.phone').style.height=window.visualViewport.height+'px';
-  });
-}
+if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>{
+  document.querySelector('.phone').style.height=window.visualViewport.height+'px'});
 
 render();
-abrirTour();
-
-/* PWA: permite instalar na tela inicial e abrir sem internet */
-if('serviceWorker' in navigator && location.protocol==='https:'){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
+if(!buscar('viuTour',false)&&DB.lancamentos.length===0){tour.dataset.open='1';pintarTour()}
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
