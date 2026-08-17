@@ -33,47 +33,71 @@
   --tap:48px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;height:100%}
 body{
-  margin:0;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--ink);
+  margin:0;height:100vh;height:100dvh;overflow:hidden;
+  overscroll-behavior:none;touch-action:manipulation;
+  font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--ink);
   background:
     radial-gradient(900px 620px at 80% -10%,rgba(48,88,98,.20),transparent 60%),
     radial-gradient(700px 560px at 0% 110%,rgba(70,46,92,.16),transparent 58%),
     var(--void);
-  display:flex;justify-content:center;padding:20px 12px;min-height:100vh;
+  display:flex;justify-content:center;align-items:center;padding:20px 12px;
 }
-@media(max-width:540px){body{padding:0}}
+@media(max-width:640px){body{padding:0;align-items:stretch}}
 
+/* Casca do app: altura fixa igual à da tela.
+   Só o <main> rola — cabeçalho e menu ficam sempre visíveis. */
 .phone{
-  position:relative;width:100%;max-width:420px;min-height:880px;display:flex;flex-direction:column;
+  position:relative;width:100%;max-width:420px;
+  height:100vh;height:min(920px,calc(100dvh - 40px));
+  display:flex;flex-direction:column;overflow:hidden;
   background:linear-gradient(180deg,#080C11,#05080B);
-  border:1px solid #17222B;border-radius:24px;overflow:hidden;
+  border:1px solid #17222B;border-radius:26px;
   box-shadow:0 40px 90px -30px rgba(0,0,0,.9);
 }
-@media(max-width:540px){.phone{border:0;border-radius:0;min-height:100dvh;max-width:none}}
+@media(max-width:640px){
+  .phone{border:0;border-radius:0;max-width:none;height:100vh;height:100dvh}
+}
 
 /* ─────────── cabeçalho ─────────── */
 header{
-  padding:16px 18px 12px;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;gap:10px;position:relative;z-index:4;
-  background:linear-gradient(180deg,rgba(12,18,24,.9),rgba(8,12,17,.6));
+  flex:none;z-index:4;position:relative;user-select:none;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 11px;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid transparent;
+  background:linear-gradient(180deg,rgba(12,18,24,.92),rgba(8,12,17,.55));
+  transition:border-color .2s,box-shadow .2s;
+}
+header[data-scrolled="1"]{
+  border-bottom-color:var(--line);
+  background:rgba(9,14,19,.98);
+  box-shadow:0 8px 24px -12px rgba(0,0,0,.9);
 }
 header .who{flex:1;min-width:0}
-header .who .hi{font-size:13px;color:var(--ink-3);letter-spacing:.01em}
-header .who .tt{font-family:var(--disp);font-size:17px;letter-spacing:.1em;color:var(--ink);margin-top:1px}
+header .who .hi{font-size:12.5px;color:var(--ink-3);letter-spacing:.01em;line-height:1.2}
+header .who .tt{font-family:var(--disp);font-size:16px;letter-spacing:.1em;color:var(--ink);margin-top:2px;line-height:1.2}
 .icobtn{
-  width:var(--tap);height:var(--tap);flex:none;display:grid;place-items:center;
-  background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;
-  color:var(--ink-2);font-size:19px;cursor:pointer;
+  width:44px;height:44px;flex:none;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:13px;
+  color:var(--ink-2);font-size:18px;cursor:pointer;transition:transform .12s,background .12s;
 }
+.icobtn:active{transform:scale(.92)}
 .icobtn:active{background:rgba(255,255,255,.11)}
 .icobtn:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
 
 /* ─────────── conteúdo ─────────── */
-main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px 110px;scrollbar-width:none}
+main{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;
+  padding:2px 16px 30px;scrollbar-width:none;
+}
 main::-webkit-scrollbar{display:none}
+main[data-anim="1"]{animation:entra .24s cubic-bezier(.22,.9,.32,1)}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){main[data-anim="1"]{animation:none}}
 
-.sec{margin-top:26px}
+.sec{margin-top:22px}
 .sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .sec-h h2{
   margin:0;font-family:var(--disp);font-size:13px;font-weight:600;
@@ -87,7 +111,7 @@ main::-webkit-scrollbar{display:none}
   clip-path:polygon(0 0,calc(100% - var(--notch)) 0,100% var(--notch),100% 100%,var(--notch) 100%,0 calc(100% - var(--notch)));
 }
 .card>.in{
-  clip-path:inherit;padding:16px;
+  clip-path:inherit;padding:15px;
   background:
     radial-gradient(130% 90% at 0% 0%,color-mix(in srgb,var(--acc) 10%,transparent),transparent 60%),
     linear-gradient(180deg,var(--panel2),var(--panel));
@@ -107,10 +131,10 @@ main::-webkit-scrollbar{display:none}
 
 /* ─────────── números ─────────── */
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.hero{text-align:center;padding:24px 0 6px}
-.hero .lbl{font-size:14px;color:var(--ink-3);letter-spacing:.04em}
-.hero .big{font-family:var(--mono);font-size:38px;line-height:1.1;margin-top:8px;color:#F1F7FA;text-shadow:0 0 30px rgba(140,195,215,.2)}
-.hero .sub{font-size:15px;color:var(--ink-2);margin-top:10px;max-width:300px;margin-left:auto;margin-right:auto}
+.hero{text-align:center;padding:18px 0 4px}
+.hero .lbl{font-size:13.5px;color:var(--ink-3);letter-spacing:.04em}
+.hero .big{font-family:var(--mono);font-size:clamp(28px,9vw,36px);line-height:1.1;margin-top:6px;color:#F1F7FA;text-shadow:0 0 30px rgba(140,195,215,.2)}
+.hero .sub{font-size:14.5px;color:var(--ink-2);margin-top:9px;max-width:300px;margin-left:auto;margin-right:auto}
 .hero .sub b{color:var(--brasa);font-weight:500}
 
 .val-lg{font-family:var(--mono);font-size:23px;color:var(--ink)}
@@ -147,7 +171,8 @@ main::-webkit-scrollbar{display:none}
 
 /* ─────────── anel ─────────── */
 .ringbox{display:flex;flex-direction:column;align-items:center;gap:18px}
-.ring{position:relative;width:186px;height:186px}
+.ring{position:relative;width:min(186px,54vw);height:min(186px,54vw)}
+.ring svg{width:100%;height:100%}
 .ring svg{transform:rotate(-90deg);display:block}
 .ring .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .ring .core b{font-family:var(--mono);font-size:30px;font-weight:500;color:#F1F7FA;line-height:1}
@@ -162,7 +187,7 @@ main::-webkit-scrollbar{display:none}
 
 /* ─────────── ação prioritária ─────────── */
 .first{
-  --acc:var(--ouro);margin-top:20px;padding:1px;
+  --acc:var(--ouro);margin-top:16px;padding:1px;
   background:linear-gradient(150deg,rgba(228,206,154,.55),rgba(228,206,154,.12) 70%);
   clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
 }
@@ -252,20 +277,24 @@ main::-webkit-scrollbar{display:none}
 
 /* ─────────── navegação ─────────── */
 nav{
-  position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;
-  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
-  background:rgba(7,11,15,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);
+  flex:none;z-index:6;display:flex;user-select:none;
+  padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+  background:rgba(8,12,17,.99);border-top:1px solid var(--line);
+  box-shadow:0 -8px 24px -14px rgba(0,0,0,.9);
 }
 nav button{
-  flex:1;min-height:var(--tap);padding:7px 2px 5px;background:none;border:0;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-3);
-  font-family:var(--sans);position:relative;border-radius:10px;
+  flex:1;min-height:52px;padding:8px 2px 6px;background:none;border:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--ink-3);
+  font-family:var(--sans);position:relative;border-radius:12px;transition:color .15s;
 }
-nav button .g{font-size:19px;line-height:1}
-nav button .t{font-size:11.5px;letter-spacing:.03em}
+nav button:active{background:rgba(255,255,255,.05)}
+nav button .g{font-size:19px;line-height:1;transition:transform .18s}
+nav button .t{font-size:11px;letter-spacing:.02em;line-height:1}
 nav button[aria-current="page"]{color:var(--ouro)}
+nav button[aria-current="page"] .g{transform:translateY(-1px)}
 nav button[aria-current="page"]::before{
-  content:'';position:absolute;top:-6px;left:24%;right:24%;height:2px;border-radius:2px;background:var(--ouro);
+  content:'';position:absolute;top:0;left:28%;right:28%;height:2.5px;border-radius:0 0 3px 3px;
+  background:var(--ouro);box-shadow:0 0 10px rgba(228,206,154,.6);
 }
 nav button:focus-visible{outline:2px solid var(--ouro);outline-offset:-3px}
 
@@ -273,7 +302,7 @@ nav button:focus-visible{outline:2px solid var(--ouro);outline-offset:-3px}
 .backdrop{position:absolute;inset:0;z-index:10;background:rgba(3,6,9,.75);display:none}
 .backdrop[data-open="1"]{display:block}
 .sheet{
-  position:absolute;left:0;right:0;bottom:0;z-index:11;max-height:88%;display:none;flex-direction:column;
+  position:absolute;left:0;right:0;bottom:0;z-index:11;max-height:90%;display:none;flex-direction:column;
   background:linear-gradient(180deg,#111A23,#0A1015);border-top:1px solid rgba(228,206,154,.28);
   border-radius:20px 20px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,.6);
   animation:up .26s cubic-bezier(.2,.9,.3,1);
@@ -284,7 +313,7 @@ nav button:focus-visible{outline:2px solid var(--ouro);outline-offset:-3px}
 .sheet .grab{width:42px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);margin:10px auto 4px;flex:none}
 .sheet .sh{display:flex;align-items:center;gap:10px;padding:8px 18px 14px;border-bottom:1px solid var(--line);flex:none}
 .sheet .sh h2{flex:1;margin:0;font-family:var(--disp);font-size:15px;letter-spacing:.12em;color:var(--ink)}
-.sheet .sb{overflow-y:auto;padding:16px 18px 28px}
+.sheet .sb{overflow-y:auto;overscroll-behavior:contain;padding:16px 18px calc(28px + env(safe-area-inset-bottom))}
 .sheet .sb::-webkit-scrollbar{display:none}
 
 /* ─────────── boas-vindas ─────────── */
@@ -305,7 +334,7 @@ nav button:focus-visible{outline:2px solid var(--ouro);outline-offset:-3px}
 
 /* ─────────── aviso ─────────── */
 .toast{
-  position:absolute;left:16px;right:16px;bottom:96px;z-index:30;padding:15px 17px;border-radius:12px;
+  position:absolute;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:30;padding:14px 16px;border-radius:12px;
   background:#18242E;border:1px solid rgba(228,206,154,.35);color:var(--ink);font-size:15px;
   box-shadow:0 12px 30px rgba(0,0,0,.5);display:none;align-items:center;gap:11px;
 }
@@ -764,13 +793,17 @@ const NAV=[
   {id:'oraculo',  g:'◬',t:'Oráculo',  tit:'Oráculo'},
 ];
 let tela='inicio', aberto=new Set(), filtro='tudo', simVal=2500;
+const rolagem={};                       // guarda onde cada aba parou
+const $view=()=>document.getElementById('view');
 
-function render(){
+function render(anim){
   const t=NAV.find(x=>x.id===tela);
   document.getElementById('hTt').textContent=t.tit;
   const h=new Date().getHours();
   document.getElementById('hHi').textContent=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
-  document.getElementById('view').innerHTML=TELAS[tela]();
+  const m=$view();
+  m.innerHTML=TELAS[tela]();
+  if(anim){m.removeAttribute('data-anim');void m.offsetWidth;m.dataset.anim='1'}
   document.getElementById('nav').innerHTML=NAV.map(x=>`
     <button data-nav="${x.id}" aria-current="${x.id===tela?'page':'false'}">
       <span class="g" aria-hidden="true">${x.g}</span><span class="t">${x.t}</span></button>`).join('');
@@ -779,7 +812,13 @@ function render(){
     if(sl)sl.addEventListener('input',e=>{simVal=+e.target.value;
       e.target.previousElementSibling.querySelector('.mono').textContent=_brl(simVal);simular()});}
 }
-function ir(id){tela=id;aberto.clear();render();document.getElementById('view').scrollTo(0,0)}
+function ir(id){
+  if(id===tela){$view().scrollTo({top:0,behavior:'smooth'});return}   // tocar na aba atual volta ao topo
+  rolagem[tela]=$view().scrollTop;
+  tela=id;render(true);
+  $view().scrollTop=rolagem[id]||0;
+  document.querySelector('header').dataset.scrolled=($view().scrollTop>4)?'1':'0';
+}
 
 /* ═══════════ AÇÕES ═══════════ */
 const ACOES={
@@ -961,6 +1000,18 @@ document.getElementById('btHelp').addEventListener('click',abrirAjuda);
 document.getElementById('btClose').addEventListener('click',fecharFolha);
 bd.addEventListener('click',fecharFolha);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharFolha()});
+
+/* Sombra no cabeçalho quando o conteúdo rola por baixo dele */
+$view().addEventListener('scroll',()=>{
+  document.querySelector('header').dataset.scrolled=$view().scrollTop>4?'1':'0';
+},{passive:true});
+
+/* Reajusta a altura quando o teclado abre ou a tela gira */
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',()=>{
+    document.querySelector('.phone').style.height=window.visualViewport.height+'px';
+  });
+}
 
 render();
 abrirTour();
