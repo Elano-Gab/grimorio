@@ -1,7 +1,7 @@
-/* Cache do Grimório.
+/* Cache do Meu Mês.
    Estratégia: rede primeiro para o app, cache primeiro para o resto.
    Assim uma versão nova sempre chega, e o app continua abrindo sem internet. */
-const CACHE = 'grimorio-v2';
+const CACHE = 'meumes-v3';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone-192.png', './icone-512.png'];
 
 self.addEventListener('install', e => {

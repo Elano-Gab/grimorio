@@ -1,12 +1,12 @@
 {
-  "name": "Grimório — códice financeiro",
-  "short_name": "Grimório",
+  "name": "Meu Mês — controle financeiro",
+  "short_name": "Meu Mês",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#06090C",
-  "theme_color": "#06090C",
+  "background_color": "#0B0B0C",
+  "theme_color": "#0B0B0C",
   "lang": "pt-BR",
   "icons": [
     { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
